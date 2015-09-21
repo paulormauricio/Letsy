@@ -5,10 +5,20 @@ angular.module('letsy.LoginControllers', [])
       '$scope', 
       '$state',
       '$filter',
+      'Event',
+      'PushService',
+      'Language',
+      'ErrorHandler',
+      'PushService',
       function(
         $scope, 
         $state,
-        $filter
+        $filter,
+        Event,
+        PushService,
+        Language,
+        ErrorHandler,
+        PushService
       )
     {
 try {
@@ -71,10 +81,11 @@ alert('FacebookUtils.logIn');
             if( response.locale ) userObject.set('locale', response.locale.toLowerCase() );
 
             userObject.save(null, null, function(error) {
-
+              ErrorHandler.error('LoginController', 'userObject.save()',error.message);
             });
           },
           function(error) {
+            ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me)',error);
           }
         );
         //Get Friends
@@ -112,19 +123,19 @@ alert('FacebookUtils.logIn');
                           UserRelation.set('Friend', Friend);
                           UserRelation.set('isActive', true);
 
-                          UserRelation.save(null, null, function(error){alert('LoginController'+ 'facebookConnectPlugin.api(/me/friends) -> UserRelation.save()'+error.message);});
+                          UserRelation.save(null, null, function(error){ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> UserRelation.save()',error.message);});
 
                           var FriendRelation = new UserFriend();
                           FriendRelation.set('User', Friend);
                           FriendRelation.set('Friend', User);
                           FriendRelation.set('isActive', true);
-                          FriendRelation.save(null, null, function(error){alert('LoginController'+ 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()'+error.message);});
+                          FriendRelation.save(null, null, function(error){ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);});
 
                           if( Friend.get('device_token') ) {
                             Language.set(Friend.get('locale') );
                             var token = [Friend.get('device_token')];
                             var message = Friend.get('first_name') + ' ' + Friend.get('last_name') + $filter('translate')('event_push_new_friend');
-//                            PushService.send(token, message);
+                            PushService.send(token, message);
                           }
 
                           console.log('Save Friends Success');
@@ -137,17 +148,23 @@ alert('FacebookUtils.logIn');
                 },
                 error: function(error) {
                   alert('Login error: ', error);
-                  alert('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);
+                  ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);
                 }
               });
 
             }
           },
           function(error) {
-            alert('LoginController', 'Parse.Query.first()',error.message);
+            ErrorHandler.error('LoginController', 'Parse.Query.first()',error.message);
           }
         );
         
+
+        //PushService.init();
+
+        //Language.set();
+
+        Event.isForceGetEvents = true;
 
         $state.go('events');
       })
@@ -156,6 +173,6 @@ alert('FacebookUtils.logIn');
 
 }
 catch(error) {
-  alert('LoginController'+ 'Login Error'+error.message);
+  ErrorHandler.error('LoginController', 'Login Error',error.message);
 }
   }]);

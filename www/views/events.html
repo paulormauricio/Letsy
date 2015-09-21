@@ -1,16 +1,86 @@
 <ion-pane class="">
 
 <ion-header-bar class="bar-positive themeBackgroundColor">
-        <button class="button button-clear">
+        <button class="button button-clear" ui-sref="profile">
             <i class="ion-person"></i>
         </button>
         <h1 class="title"><img src="img/letsy_white.png"></h1>
+        <button class="button button-clear" ui-sref="editEventName({isNew: true, reload: true})" ng-hide="isOffline">
+            <i class="ion-plus-round"></i>
+        </button>
 </ion-header-bar>
 
 <div style="position: fixed; left: 0px; right: 0px; top: 50px; bottom: 0px; background-color: white;"></div>
 
 <ion-content has-bouncing="true">
-<h1>Hello world</h1>
+    <ion-refresher pulling-icon="{{isIOS ? 'ion-chevron-down' : 'ion-android-arrow-down'}}" pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()" class="themeColor"></ion-refresher>
+
+    <ion-list class="largeList">
+
+    <!-- My Events -->
+        <div ng-show="myEvents.length == 0" class="emptyMsg" translate="event_myEvents_noEvents"></div>
+        <ion-item class="cover coverLight" ng-repeat="myEvent in myEvents track by myEvent.id" ng-click="showEvent(myEvent)" nav-transition="ios">
+
+            <span ng-switch="myEvent.place_image_url == undefined">
+                <div ng-switch-when="false" class="background backgroundImage" 
+                     ng-style="{'background-image': 'url('+myEvent.place_image_url+')'}"></div>
+                <div ng-switch-when="true" class="background backgroundImage" 
+                     ng-style="{'background-image': 'url(img/themeIcon/'+myEvent.theme+'.png)'}" style="max-width: 220px; margin-left: -30px;"></div>
+            </span>
+            
+            <h2 class="topHalf">{{myEvent.name}}</h2>
+            <h3 class="bottomHalf">{{myEvent.place_name}}</h3>
+            <div class="bottom">
+                <span ng-show="myEvent.date">
+                    <i class="ion-calendar"></i>
+                    {{myEvent.date | prettyDateFormat }}
+                </span>
+                <span>
+                    <i class="ion-person-stalker"></i>
+                    {{myEvent.participants.length }}
+                </span>
+            </div>
+        </ion-item>
+    </ion-list>
+
+    <ion-list class="largeList bottomSpace" ng-hide="isOffline">
+    <!-- New Events -->
+        <h1 class="item-divider simple">
+            <i class="ion-android-arrow-dropdown"></i>
+            <span translate="event_newEvents_title"></span>
+            <i class="ion-android-arrow-dropdown"></i>
+        </h1>
+        <div ng-show="newEvents.length == 0" class="emptyMsg" translate="event_newEvents_noEvents"></div>
+        <ion-item class="cover coverLight" ng-repeat="newEvent in newEvents"
+                  ng-click="showEvent(newEvent)" nav-transition="ios">
+
+            <span ng-switch="newEvent.place_image_url == undefined">
+                <div ng-switch-when="false" class="background backgroundImage" 
+                     ng-style="{'background-image': 'url('+newEvent.place_image_url+')'}"></div>
+                <div ng-switch-when="true" class="background backgroundImage" 
+                     ng-style="{'background-image': 'url(img/themeIcon/'+newEvent.theme+'.png)'}" style="max-width: 220px; margin-left: -30px;"></div>
+            </span>
+
+            <button class="themeButton" ng-click="joinNewEvent(newEvent, $index); $event.stopPropagation();"><i class="icon ion-link"></i></button>
+
+            <h2 class="topHalf">{{newEvent.name}}</h2>
+            <h3 class="bottomHalf">{{newEvent.place_name}}</h3>
+            <div class="bottom">
+                <span ng-show="newEvent.date">
+                    <i class="ion-calendar"></i>
+                    {{newEvent.date | prettyDateFormat }}
+                </span>
+                <span ng-show="newEvent.participants">
+                    <i class="ion-person-stalker"></i>
+                    {{newEvent.participants.length }}
+                </span>
+            </div>
+
+            <ion-option-button class="button-assertive" ng-click="leaveEvent($index)" style="padding-left: 17px;">
+              <i class="icon ion-ios-trash-outline"></i>
+            </ion-option-button>
+        </ion-item>
+    </ion-list>
 </ion-content>
 
 </ion-pane>
