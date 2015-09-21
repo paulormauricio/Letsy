@@ -26,11 +26,13 @@
   <!-- <gap:plugin name="com.phonegap.plugins.pushplugin" version="2.5.0" /> -->
 
 
-  <gap:plugin name="com.phonegap.plugins.facebookconnect" version="0.11.0" source="npm">
+  <!-- <gap:plugin name="com.npm.cordova.plugin.facebookconnect.orlando" version="0.11.0"> -->
+
+  <gap:plugin name="com.phonegap.plugins.facebookconnect.orlando" version="0.11.0" source="npm">
     <param name="APP_ID" value="1536111309938547"/>
     <param name="APP_NAME" value="Letsy"/>
   </gap:plugin>
-
+cordova-plugin-facebookconnect-orlando
 
   <feature name="Keyboard">
       <param name="ios-package" value="IonicKeyboard" onload="true" />
