@@ -1,0 +1,20 @@
+<ion-header-bar class="bar-positive themeBackgroundColor">
+        <button class="button button-clear" ui-sref="showEvent({objectId: showEvent.id})">
+          <i class="icon ion-ios-arrow-back"></i>
+        </button>
+        <h1 class="title" translate="event_map"></h1>
+</ion-header-bar>
+
+<ion-view ng-style="{'width': item.width, 'height': item.height}">
+
+  <table id="addressInfo" ng-show="showEvent.place_address" class="bottom">
+  <tr>
+      <td class="info">
+          <p class="bold" translate="event_place_address">Address</p>
+          <p>{{ showEvent.place_address }}</p>
+      </td>
+  </tr>
+  </table>
+  <div id="fullMap" class="" data-tap-disabled="true"></div>
+
+</ion-view>
