@@ -57,8 +57,7 @@ try {
 
       alert('chegou ao Login');
       if (!window.cordova) {
-        //facebookConnectPlugin.browserInit('1536111309938547');
-        facebookConnectPlugin.browserInit('1659803760902634');
+        facebookConnectPlugin.browserInit('1536111309938547');
       }
       facebookConnectPlugin.login(['email, user_friends'], fbLoginSuccess, fbLoginError);
 alert('passou o facebookConnectPlugin');
@@ -148,7 +147,7 @@ alert('FacebookUtils.logIn');
 
                 },
                 error: function(error) {
-                  alert('Login error: ', error);
+                  alert('Login error: '+ error);
                   ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);
                 }
               });
@@ -165,7 +164,7 @@ alert('FacebookUtils.logIn');
 
         //Language.set();
 
-        Event.isForceGetEvents = true;
+        //Event.isForceGetEvents = true;
 
         $state.go('events');
       })
@@ -175,5 +174,6 @@ alert('FacebookUtils.logIn');
 }
 catch(error) {
   ErrorHandler.error('LoginController', 'Login Error',error.message);
+  alert('Facebook Error: '+error.message);
 }
   }]);
