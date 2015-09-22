@@ -57,7 +57,8 @@ try {
 
       alert('chegou ao Login');
       if (!window.cordova) {
-        facebookConnectPlugin.browserInit('1536111309938547');
+        //facebookConnectPlugin.browserInit('1536111309938547');
+        facebookConnectPlugin.browserInit('1659803760902634');
       }
       facebookConnectPlugin.login(['email, user_friends'], fbLoginSuccess, fbLoginError);
 alert('passou o facebookConnectPlugin');
