@@ -73,14 +73,14 @@ try {
       loadMapsApi();
     });
     document.addEventListener("pause", function() {
-      alert('App paused');
+      //alert('App paused');
     });
     loadMapsApi();
 
     PushService.init();
 }
 catch(err) {
-    alert('ionicPlatform.ready Error: ',err);
+    alert('ionicPlatform.ready Error: '+err);
     ErrorHandler.error('ionicPlatform', 'ready()', err);
 }
   })
@@ -124,7 +124,7 @@ catch(err) {
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
       $rootScope.isOffline = false;
-      PushService.init();
+      //PushService.init();
   });
 
   // UI Router Authentication Check
