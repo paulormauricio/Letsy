@@ -38,13 +38,18 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     calculateColectionItemSize();
 
-    Event.loadMyEvents().then(function(objects) {
-        $scope.myEvents = objects;
-        console.log('My Events: ', objects);
-    })
-    .finally( function() {
-        $ionicLoading.hide();
-    });
+    if( $rootScope.isOffline ) {
+        Event.loadMyEvents().then(function(objects) {
+            $scope.myEvents = objects;
+            console.log('My Events: ', objects);
+        })
+        .finally( function() {
+            $ionicLoading.hide();
+        });
+    }
+    else {
+        $scope.doRefresh();
+    }
 
     Event.getNew().then(function(objects) {
         $scope.newEvents = objects;
