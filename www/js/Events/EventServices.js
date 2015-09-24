@@ -459,19 +459,18 @@ console.log('Event loaded locally: ', doc);
 		};
 
 	this.updateEventLocally = function(myEvent) {
-
-		$q.when(_db.get(myEvent.id)
+		console.log('updateEventLocally');
+		myEvent._id = myEvent.id;
+		return $q.when(_db.get(myEvent.id)
 			.then(function (doc) {
 				doc.updatedAt = new Date(doc.updatedAt);
 
 				if( myEvent.updatedAt > doc.updatedAt  ) {
-					console.log('updateEventLocally');
-					myEvent._id = myEvent.id;
 					myEvent._rev = doc._rev;
 					// Serialize participants
 					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-					_db.put(myEvent);
+					_db.put(myEvent).then(function(res){console.log('Put new event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',error.message);})
 					// Unserialize participants
 					myEvent.participants = angular.fromJson(myEvent.participants);
 					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
@@ -480,9 +479,13 @@ console.log('Event loaded locally: ', doc);
 			.catch(function(error) {
 				if( error.name === 'not_found') {
 					console.log('Document not found in local DB');
+					myEvent.participants = angular.toJson(myEvent.participants, false);
+					_db.put(myEvent).then(function(res){console.log('Put new event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Put new doc',error.message);})
+					myEvent.participants = angular.fromJson(myEvent.participants);
+					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
 				}
 				else {
-					ErrorHandler.error('EventServices', 'Event.get() -> _db.get()',error.message);
+					ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> _db.get()',error.message);
 				}
 			})
 		);
@@ -628,7 +631,7 @@ console.log('Event loaded locally: ', doc);
 		},
 
 		updateByEvent: function(saveEvent, user, isGoing) {
-
+			var deferred = $q.defer();
 	  		var queryEvent = new Event(); 
 	  		queryEvent.id = saveEvent.id;
 
@@ -649,11 +652,14 @@ console.log('Event loaded locally: ', doc);
 			  	else {
 			  		console.log('Warning: Participant not found! ', participant);
 			  	}
+			  	$rootScope.$apply(function() { deferred.resolve(true); });
 			  },
 			  error: function(error) {
 			    ErrorHandler.error('EventServices', 'Participant.updateByEvent()',error.message);
 			  }
 			});
+
+			return deferred.promise;
 		},
 
 		delete: function (participantId) {

@@ -6,6 +6,8 @@ angular.module('letsy.EventControllers',[])
         '$state', 
         '$scope', 
         '$ionicLoading', 
+        '$ionicListDelegate',
+        '$ionicPopup',
         '$filter',
         '$rootScope',
         'Event', 
@@ -17,6 +19,8 @@ angular.module('letsy.EventControllers',[])
             $state, 
             $scope,
             $ionicLoading,
+            $ionicListDelegate,
+            $ionicPopup,
             $filter,
             $rootScope,
             Event,
@@ -75,13 +79,18 @@ console.log('<---------- Refresh events ----------->');
 
     $scope.joinNewEvent = function(newEvent, index) {
 
+        Participant.updateByEvent(newEvent, Parse.User.current(), true).then(function() {
+            $scope.doRefresh();
+        });
+        
         $ionicLoading.show({
           templateUrl : 'views/templateSuccessFeedback.html',
           duration: 1500,
           noBackdrop: true
+        }).then(function(){
+            alert(1);
         });
 
-        Participant.updateByEvent(newEvent, Parse.User.current(), true);
         $scope.newEvents.splice(index, 1);
         $scope.myEvents.push(newEvent);
         Event.updateEventLocally(newEvent);
@@ -93,12 +102,25 @@ console.log('<---------- Refresh events ----------->');
 
     $scope.leaveEvent = function(index) {
         console.log('leave Event index: ', index);
-        Participant.delete($scope.newEvents[index].participantId);
-        $scope.newEvents.splice(index, 1);
-        $ionicLoading.show({
-            templateUrl : 'views/templateDestroyFeedback.html',
-            duration: 1500,
-            noBackdrop: true
+
+        $ionicPopup.confirm({
+            title: $filter('translate')('event_close'),
+            template: $filter('translate')('event_close_confirm')+$scope.newEvents[index].name+'?',
+            okText: $filter('translate')('event_close'),
+            okType: 'button-assertive',
+            cancelText: $filter('translate')('cancel'),
+            cancelType: 'button-stable'
+        }).then(function(result) {
+            $ionicListDelegate.$getByHandle('newEventsList').closeOptionButtons();
+            if(result) {
+                Participant.delete($scope.newEvents[index].participantId);
+                $scope.newEvents.splice(index, 1);
+                $ionicLoading.show({
+                    templateUrl : 'views/templateDestroyFeedback.html',
+                    duration: 1500,
+                    noBackdrop: true
+                });
+            }
         });
     }
 
@@ -131,6 +153,7 @@ console.log('<---------- Refresh events ----------->');
             '$state',
             '$stateParams',
             '$ionicLoading', 
+            '$ionicPopup',
             '$ionicActionSheet',
             '$timeout',
             '$filter',
@@ -149,6 +172,7 @@ console.log('<---------- Refresh events ----------->');
                 $state,
                 $stateParams, 
                 $ionicLoading,
+                $ionicPopup,
                 $ionicActionSheet,
                 $timeout,
                 $filter,
@@ -240,9 +264,12 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
                 for (var i = 0; i<$scope.showEvent.participants.length; i++) {
                     if($scope.showEvent.participants[i].isGoing) {
                         $scope.showEvent.totalParticipants++;
+                        if( $scope.showEvent.participants[i].id == Parse.User.current().id )
+                            count++;
                     }
-                    if( $scope.showEvent.participants[i].id == Parse.User.current().id )
-                        count++;
+                    else {
+                        break;
+                    }
                 };
                 $scope.isShowJoinButton = count == 0 ? true : false;
 
@@ -356,46 +383,70 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         Participant.updateByEvent($scope.showEvent, Parse.User.current(), true);
         $scope.isShowJoinButton = false;
         $scope.isShowEditButton = true;
+
+        for (var i = 0; i<$scope.showEvent.participants.length; i++) {
+            if($scope.showEvent.participants[i].facebookId == Parse.User.current().get('facebookId')) {
+                $scope.showEvent.participants[i].isGoing = true;
+                break;
+            }
+        }
         Event.updateEventLocally($scope.showEvent);
 
-        var newParticipant = {
-            id: Parse.User.current().id,
-            facebookId: Parse.User.current().get('facebookId'),
-            first_name: Parse.User.current().get('first_name'),
-            last_name: Parse.User.current().get('last_name'),
-            isGoing: true,
-            isHidden: false
-        };
-        $scope.showEvent.participants.unshift(newParticipant);
     }
 
     $scope.leaveEvent = function() {
-        Participant.delete($scope.showEvent.participants.parcicipantId).then(function(){
-            Event.leaveEvent($scope.showEvent);
-            $ionicLoading.show({
-              templateUrl : 'views/templateDestroyFeedback.html',
-              duration: 1500,
-              noBackdrop: true
-            });
-            $timeout(function() {
-                $state.go('events');
-            }, 1500);
+
+        $ionicPopup.confirm({
+            title: $filter('translate')('event_leave'),
+            template: $filter('translate')('event_leave_confirm')+$scope.newEvents[index].name+'?',
+            okText: $filter('translate')('event_leave'),
+            okType: 'button-assertive',
+            cancelText: $filter('translate')('cancel'),
+            cancelType: 'button-stable'
+        }).then(function(result) {
+            if(result) {
+
+                Participant.delete($scope.showEvent.participants.parcicipantId).then(function(){
+                    Event.leaveEvent($scope.showEvent);
+                    $ionicLoading.show({
+                      templateUrl : 'views/templateDestroyFeedback.html',
+                      duration: 1500,
+                      noBackdrop: true
+                    });
+                    $timeout(function() {
+                        $state.go('events');
+                    }, 1500);
+                });
+            }
         });
     }
 
     $scope.deleteEvent = function() {
         if( $scope.isOwner ) {
-            $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-            Event.myEvent = $scope.showEvent;
-            Event.myEvent.isDeleted = true;
-            Event.save().then(function(){
-                console.log('Event deleted successfully!');
-                $state.go('events');
-            }).catch(function(error){
-                ErrorHandler.error('EventShowController', 'deleteEvent()', error.message);
-            }).finally(function(){
-                $ionicLoading.hide();
+            $ionicPopup.confirm({
+                title: $filter('translate')('event_delete'),
+                template: $filter('translate')('event_delete_confirm')+$scope.newEvents[index].name+'?',
+                okText: $filter('translate')('event_delete'),
+                okType: 'button-assertive',
+                cancelText: $filter('translate')('cancel'),
+                cancelType: 'button-stable'
+            }).then(function(result) {
+                if(result) {
+
+                    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
+
+                    Event.myEvent = $scope.showEvent;
+                    Event.myEvent.isDeleted = true;
+                    Event.save().then(function(){
+                        console.log('Event deleted successfully!');
+                        $state.go('events');
+                    }).catch(function(error){
+                        ErrorHandler.error('EventShowController', 'deleteEvent()', error.message);
+                    }).finally(function(){
+                        $ionicLoading.hide();
+                    });
+                }
             });
         }
     }
@@ -404,13 +455,11 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 //  Edit Place  -------------------
     $scope.placePressed = function() {
 
-        if( $scope.isShowJoinButton ) return;
-
         if( $scope.showEvent.place_id != undefined && !$scope.isEdit) {
             $state.go('showEventMap', {objectId: $scope.showEvent.id});
         }
 
-        if( !$scope.isEdit) return;
+        if( $scope.isShowJoinButton || !$scope.isEdit) return;
 
         if( !$scope.showEvent.place_name ) {
             Event.myEvent = $scope.showEvent;
@@ -973,8 +1022,11 @@ console.log('$scope.invitedFriends: ', $scope.invitedFriends);
             if($scope.invitedFriends[i].isGoing)
                 Event.showEvent.participants.push($scope.invitedFriends[i]);
         };
+        Event.updateEventLocally(Event.showEvent).then(function() {
+            console.log('Event updated!');
+            Event.resetMyEvent();
+        });
         
-        Event.resetMyEvent();
         console.log('ShowEvent before show:', Event.showEvent);
 
         var delay = 0;

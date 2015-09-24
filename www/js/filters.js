@@ -51,7 +51,7 @@ angular.module('letsy.filters',[])
 
 })
 
-.filter('prettyDateFormat', function($filter) {
+.filter('prettyDateFormat', function($filter, Language) {
     
 
     function differenceInDays (date1, date2) {
@@ -86,6 +86,16 @@ angular.module('letsy.filters',[])
             var week = $filter('date')(inputDateTime, 'EEEE').toLowerCase();
             return $filter('translate')( 'date_week_'+week ) + ' '+$filter('translate')('date_at')+' '+inputTime;
         }
+        else if(dateDiff < 360) {
+            var month = $filter('translate')( 'date_month_'+$filter('date')(inputDateTime, 'MM'));
+            
+            switch(Language.dateFormat) {
+                case 'MM-DD':
+                    return month +'/'+ inputDate.getDate()+' '+$filter('translate')('date_at')+' '+$filter('date')(inputDateTime, ' HH:mm' );
+                case 'DD-MM':
+                    return inputDate.getDate() +'/'+month+' '+$filter('translate')('date_at')+' '+$filter('date')(inputDateTime, ' HH:mm' );
+            }
+        }
         else {
             return $filter('date')(inputDateTime, 'dd-MM-yyyy ')+$filter('translate')('date_at')+$filter('date')(inputDateTime, ' HH:mm' );
         }
@@ -95,9 +105,8 @@ angular.module('letsy.filters',[])
 
 })
 
-.filter('prettyDayFormat', function($filter) {
+.filter('prettyDayFormat', function($filter, Language) {
     
-    var dateFormat = Parse.User.current().get('locale').toLowerCase() == 'en_us' ? 'MM-DD' : 'DD-MM';
 
     function differenceInDays (date1, date2) {
         
@@ -133,7 +142,7 @@ angular.module('letsy.filters',[])
         }
         else if( currentDateTime.getFullYear() ==  inputDate.getFullYear() ) {
             var month = $filter('translate')( 'date_month_'+$filter('date')(inputDateTime, 'MM'));
-            switch(dateFormat) {
+            switch(Language.dateFormat) {
                 case 'MM-DD':
                     return month +' '+ inputDate.getDate();
                 case 'DD-MM':

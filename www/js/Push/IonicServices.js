@@ -63,9 +63,9 @@ angular.module('letsy.IonicServices',[])
 	return {
 
 		init: function() {
- return;
+ 
 			if(!Parse.User.current()) return;
-try {
+
 		    console.log('Ionic User: Identifying with Ionic User service');
 
 		    var user = $ionicUser.get();
@@ -110,18 +110,10 @@ try {
 
 		    });
 
-}
-catch(err) {
-    ErrorHandler.error('PushService', 'init()',err.message);
-    alert( 'Push init Error: '+err.message);
-}
-		    return;
-
 		},
 
 		send: function(tokens, msg, payload) {
 
- return;
 			if( alert == undefined || tokens === undefined || tokens.length == 0) {
 				return;
 				tokens = [Parse.User.current().get('device_token')];

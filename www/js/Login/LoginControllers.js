@@ -23,7 +23,7 @@ angular.module('letsy.LoginControllers', [])
     {
 try {
     if( Parse.User.current() ) {
-      alert('Users logged in. Redirect to Events');
+      //alert('Users logged in. Redirect to Events');
       $state.transitionTo("events");
     }
 
@@ -31,7 +31,6 @@ try {
       
     var fbLoginSuccess = function(response) {
       if (!response.authResponse){
-        alert('Error: Cannot find the authResponse');
         fbLoginError("Cannot find the authResponse");
         return;
       }
@@ -49,24 +48,24 @@ try {
     };
 
     var fbLoginError = function(error){
-      alert('fbLoginError:'+error.message);
+      //alert('fbLoginError:'+error.message);
       fbLogged.reject(error);
     };
 
     $scope.login = function() {
 
-      alert('chegou ao Login');
+//alert('chegou ao Login');
       if (!window.cordova) {
         facebookConnectPlugin.browserInit('1536111309938547');
       }
       facebookConnectPlugin.login(['email, user_friends'], fbLoginSuccess, fbLoginError);
-alert('passou o facebookConnectPlugin');
+//alert('passou o facebookConnectPlugin');
       fbLogged.then( function(authData) {
-        alert('fbLogged Promised');
+//alert('fbLogged Promised');
         return Parse.FacebookUtils.logIn(authData);
       })
       .then( function(userObject) {
-alert('FacebookUtils.logIn');
+//alert('FacebookUtils.logIn');
         //Get User Info
         facebookConnectPlugin.api('/me', null, 
           function(response) {
@@ -147,7 +146,7 @@ alert('FacebookUtils.logIn');
 
                 },
                 error: function(error) {
-                  alert('Login error: '+ error);
+//alert('Login error: '+ error);
                   ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);
                 }
               });
@@ -160,11 +159,11 @@ alert('FacebookUtils.logIn');
         );
         
 
-        //PushService.init();
+        PushService.init();
 
-        //Language.set();
+        Language.set();
 
-        //Event.isForceGetEvents = true;
+        Event.isForceGetEvents = true;
 
         $state.go('events');
       })
@@ -174,6 +173,6 @@ alert('FacebookUtils.logIn');
 }
 catch(error) {
   ErrorHandler.error('LoginController', 'Login Error',error.message);
-  alert('Facebook Error: '+error.message);
+//alert('Facebook Error: '+error.message);
 }
   }]);

@@ -2,14 +2,13 @@ angular.module('letsy',
     [
       'ionic',
       'ngCordova',
-      // 'firebase',
+      'firebase',
       'ionic.service.core',
       'ionic.service.push',
       'ion-autocomplete',
       'ion-sticky',
       'ngGPlaces',
       'monospaced.elastic',
-      // 'angularMoment',
       'letsy.translations',
       'letsy.EventControllers',
       'letsy.EventServices',
@@ -69,12 +68,8 @@ try {
     document.addEventListener("online", function() {
       loadMapsApi();
     });
-    document.addEventListener("resume", function() {
-      loadMapsApi();
-    });
-    document.addEventListener("pause", function() {
-      //alert('App paused');
-    });
+    // document.addEventListener("resume", function() { loadMapsApi(); });
+    // document.addEventListener("pause", function() { });
     loadMapsApi();
 
     PushService.init();

@@ -15,10 +15,9 @@
 <ion-content has-bouncing="true">
     <ion-refresher pulling-icon="{{isIOS ? 'ion-chevron-down' : 'ion-android-arrow-down'}}" pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()" class="themeColor"></ion-refresher>
 
-    <ion-list class="largeList">
+<!-- My Events -->
+    <ion-list class="largeList" ng-hide="myEvents.length == 0">
 
-    <!-- My Events -->
-        <div ng-show="myEvents.length == 0" class="emptyMsg" translate="event_myEvents_noEvents"></div>
         <ion-item class="cover coverLight" ng-repeat="myEvent in myEvents track by myEvent.id" ng-click="showEvent(myEvent)" nav-transition="ios">
 
             <span ng-switch="myEvent.place_image_url == undefined">
@@ -35,7 +34,7 @@
                     <i class="ion-calendar"></i>
                     {{myEvent.date | prettyDateFormat }}
                 </span>
-                <span>
+                <span ng-show="myEvent.participants.length>0">
                     <i class="ion-person-stalker"></i>
                     {{myEvent.participants.length }}
                 </span>
@@ -43,14 +42,15 @@
         </ion-item>
     </ion-list>
 
-    <ion-list class="largeList bottomSpace" ng-hide="isOffline">
-    <!-- New Events -->
+<!-- New Events -->
+    <ion-list class="largeList bottomSpace" ng-hide="isOffline || newEvents.length == 0" delegate-handle="newEventsList">
+
         <h1 class="item-divider simple">
             <i class="ion-android-arrow-dropdown"></i>
             <span translate="event_newEvents_title"></span>
             <i class="ion-android-arrow-dropdown"></i>
         </h1>
-        <div ng-show="newEvents.length == 0" class="emptyMsg" translate="event_newEvents_noEvents"></div>
+
         <ion-item class="cover coverLight" ng-repeat="newEvent in newEvents"
                   ng-click="showEvent(newEvent)" nav-transition="ios">
 
@@ -61,7 +61,7 @@
                      ng-style="{'background-image': 'url(img/themeIcon/'+newEvent.theme+'.png)'}" style="max-width: 220px; margin-left: -30px;"></div>
             </span>
 
-            <button class="themeButton" ng-click="joinNewEvent(newEvent, $index); $event.stopPropagation();"><i class="icon ion-link"></i></button>
+            <button class="button button-balanced" ng-click="joinNewEvent(newEvent, $index); $event.stopPropagation();"><i class="ion-log-in"></i></button>
 
             <h2 class="topHalf">{{newEvent.name}}</h2>
             <h3 class="bottomHalf">{{newEvent.place_name}}</h3>
@@ -70,7 +70,7 @@
                     <i class="ion-calendar"></i>
                     {{newEvent.date | prettyDateFormat }}
                 </span>
-                <span ng-show="newEvent.participants">
+                <span ng-show="newEvent.participants.length > 0">
                     <i class="ion-person-stalker"></i>
                     {{newEvent.participants.length }}
                 </span>
@@ -81,6 +81,8 @@
             </ion-option-button>
         </ion-item>
     </ion-list>
+
+    <div ng-show="myEvents.length == 0 && newEvents.length == 0" class="emptyMsg" translate="event_newEvents_noEvents"></div>
 </ion-content>
 
 </ion-pane>

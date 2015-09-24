@@ -25,8 +25,13 @@
         <button class="action invisible" style="left: 20%" ng-class="{'visible': isEdit && isOwner}" ng-click="deleteEvent()"><i class="icon ion-ios-trash-outline"></i></button>
         <button class="hidden action invisible" style="right: 20%" ng-class="{'visible': isEdit}" ng-click="changePhoto()"><i class="icon ion-camera"></i></button>
 
-        <button class="action invisible" style="left: 20%" ng-class="{'visible': !isOffline && isShowJoinButton}" ng-click="joinEvent()"><i class="icon ion-link"></i></button>
-        <button class="hidden action invisible" style="right: 20%" ng-class="{'visible': isEdit}" ng-click="leaveEvent()"><i class="icon ion-ios-trash-outline"></i></button>
+        <button class="button-left button button-balanced invisible" ng-class="{'visible': !isOffline && isShowJoinButton}" ng-click="joinEvent()">
+            <i class="icon ion-log-in"></i>
+            <span style="padding-left: 5px" translate="event_accept"></span>
+        </button>
+        <button class="button-right button button-assertive invisible" ng-class="{'visible': !isOffline && isShowJoinButton}" ng-click="leaveEvent()">
+            <i class="icon ion-ios-trash-outline"></i>
+        </button>
 
 
         <h1 ng-show="showEvent.name"

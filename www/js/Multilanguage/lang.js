@@ -19,6 +19,13 @@ angular.module('letsy.translations',
 
 .factory('Language',['$rootScope', '$q', '$translate', function($rootScope, $q, $translate){
 
+	function getDateFormat() {
+		if( Parse.User.current() )
+			return Parse.User.current().get('locale').toLowerCase() == 'en_us' ? 'MM-DD' : 'DD-MM';
+		else
+			return 'DD-MM';
+	}
+
 	return {
 
 		set: function(locale) {
@@ -30,7 +37,9 @@ angular.module('letsy.translations',
 	          $translate.use( locale.toLowerCase() );
 	        }
 
-		}
+		},
+
+		dateFormat: getDateFormat()
 
    }
 }]);
