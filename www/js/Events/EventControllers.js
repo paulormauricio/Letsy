@@ -38,24 +38,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     calculateColectionItemSize();
 
-    if( $rootScope.isOffline ) {
-        Event.loadMyEvents().then(function(objects) {
-            $scope.myEvents = objects;
-            console.log('My Events: ', objects);
-        })
-        .finally( function() {
-            $ionicLoading.hide();
-        });
-    }
-    else {
-        $scope.doRefresh();
-    }
-
-    Event.getNew().then(function(objects) {
-        $scope.newEvents = objects;
-        console.log('New Events: ', objects);
-    });
-
     $scope.doRefresh = function() {
 
         if( $rootScope.isOffline ) {
@@ -74,8 +56,27 @@ console.log('<---------- Refresh events ----------->');
         })
         .finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
+            $ionicLoading.hide();
         });
     }
+
+    if( !$rootScope.isOffline ) {
+        Event.loadMyEvents().then(function(objects) {
+            $scope.myEvents = objects;
+            console.log('My Events: ', objects);
+        })
+        .finally( function() {
+            $ionicLoading.hide();
+        });
+    }
+    else {
+        $scope.doRefresh();
+    }
+
+    Event.getNew().then(function(objects) {
+        $scope.newEvents = objects;
+        console.log('New Events: ', objects);
+    });
 
     $scope.showEvent = function(myEvent) {
         Event.showEvent = myEvent;
@@ -92,20 +93,20 @@ console.log('<---------- Refresh events ----------->');
           templateUrl : 'views/templateSuccessFeedback.html',
           duration: 1500,
           noBackdrop: true
-        }).then(function(){
-            alert(1);
         });
 
         $scope.newEvents.splice(index, 1);
         $scope.myEvents.push(newEvent);
         Event.updateEventLocally(newEvent);
+        //Notify event host
+        Event.notifyHost(newEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+newEvent.name );
     }
 
     angular.element(window).bind('resize', function () {
         calculateColectionItemSize();
     });
 
-    $scope.leaveEvent = function(index) {
+    $scope.leaveEvent = function(newEvent, index) {
         console.log('leave Event index: ', index);
 
         $ionicPopup.confirm({
@@ -125,6 +126,8 @@ console.log('<---------- Refresh events ----------->');
                     duration: 1500,
                     noBackdrop: true
                 });
+                //Notify event host
+                Event.notifyHost(newEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_left')+newEvent.name );
             }
         });
     }
@@ -257,20 +260,24 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 // result.push({id: 8, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
 // result.push({id: 9, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
 
-                $scope.showEvent.participants = $filter('orderBy')(result, '-isGoing +first_name +last_name' );
+                $scope.showEvent.participants_all = $filter('orderBy')(result, '-isGoing +first_name +last_name' );
                 $scope.showEvent.totalParticipants = 0;
                 console.log('Participantes: ', $scope.showEvent.participants);
 
-                // Store Participants Locally
-                Event.updateEventLocally($scope.showEvent);
+
+                $scope.showEvent.participants = [];
 
                 // Validar se o utilizador vai ao evento
                 var count = 0;
-                for (var i = 0; i<$scope.showEvent.participants.length; i++) {
-                    if($scope.showEvent.participants[i].isGoing) {
+                for (var i = 0; i<$scope.showEvent.participants_all.length; i++) {
+                    if($scope.showEvent.participants_all[i].isGoing) {
+                        $scope.showEvent.participants.push($scope.showEvent.participants_all[i]);
                         $scope.showEvent.totalParticipants++;
-                        if( $scope.showEvent.participants[i].id == Parse.User.current().id )
+                        if( $scope.showEvent.participants_all[i].id == Parse.User.current().id ) {
                             count++;
+                            // Store Participants Locally
+                            Event.updateEventLocally($scope.showEvent);
+                        }
                     }
                     else {
                         break;
@@ -330,7 +337,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     $scope.$on('elastic:resize', function(event, element, oldHeight, newHeight) {
         oldHeight = oldHeight == 'auto' ? newHeight : oldHeight;
         $scope.chatMarginBottom += newHeight - oldHeight;
-        $ionicScrollDelegate.scrollBottom();
+        $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
     });
 
     function getLocationWeather() {
@@ -389,21 +396,28 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         $scope.isShowJoinButton = false;
         $scope.isShowEditButton = true;
 
-        for (var i = 0; i<$scope.showEvent.participants.length; i++) {
-            if($scope.showEvent.participants[i].facebookId == Parse.User.current().get('facebookId')) {
-                $scope.showEvent.participants[i].isGoing = true;
+        // Remove event from newEvents list
+        Event.removeFromNewEvents($scope.showEvent.id);
+
+        for (var i = 0; i<$scope.showEvent.participants_all.length; i++) {
+            if($scope.showEvent.participants_all[i].facebookId == Parse.User.current().get('facebookId')) {
+                $scope.showEvent.participants_all[i].isGoing = true;
+                $scope.showEvent.participants.push($scope.showEvent.participants_all[i]);
+                $scope.showEvent.totalParticipants++;
                 break;
             }
         }
         Event.updateEventLocally($scope.showEvent);
 
+        //Notify event host
+        Event.notifyHost($scope.showEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+$scope.showEvent.name );
     }
 
     $scope.leaveEvent = function() {
 
         $ionicPopup.confirm({
             title: $filter('translate')('event_leave'),
-            template: $filter('translate')('event_leave_confirm')+$scope.newEvents[index].name+'?',
+            template: $filter('translate')('event_leave_confirm')+$scope.showEvent.name+'?',
             okText: $filter('translate')('event_leave'),
             okType: 'button-assertive',
             cancelText: $filter('translate')('cancel'),
@@ -411,17 +425,30 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         }).then(function(result) {
             if(result) {
 
-                Participant.delete($scope.showEvent.participants.parcicipantId).then(function(){
-                    Event.leaveEvent($scope.showEvent);
-                    $ionicLoading.show({
-                      templateUrl : 'views/templateDestroyFeedback.html',
-                      duration: 1500,
-                      noBackdrop: true
-                    });
-                    $timeout(function() {
-                        $state.go('events');
-                    }, 1500);
+                for (var i = 0; i < $scope.showEvent.participants_all.length; i++) {
+                    if( $scope.showEvent.participants_all[i].id === Parse.User.current().id ) {
+                        Participant.delete($scope.showEvent.participants_all[i].participantId);
+                        break;
+                    }
+                };
+
+                Event.leaveEvent($scope.showEvent);
+
+                $ionicLoading.show({
+                  templateUrl : 'views/templateDestroyFeedback.html',
+                  duration: 1500,
+                  noBackdrop: true
                 });
+                $timeout(function() {
+                    $state.go('events');
+                }, 1500);
+
+                // Remove event from newEvents list
+                if($scope.isShowJoinButton) 
+                    Event.removeFromNewEvents($scope.showEvent.id);
+
+                //Notify event host
+                Event.notifyHost($scope.showEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_left')+$scope.showEvent.name );
             }
         });
     }
@@ -445,6 +472,20 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
                     Event.myEvent.isDeleted = true;
                     Event.save().then(function(){
                         console.log('Event deleted successfully!');
+
+                        var notify_tokens = [];
+                        var push_message = '';
+                        var payload = {
+                            '$state': 'showEvent',
+                            'deleteEvent': '{\'objectId\': '+$stateParams.objectId+'}',
+                        };
+                        for (var i = 0; i < $scope.showEvent.participants.length; i++) {
+                            notify_tokens.push($scope.showEvent.participants[i].device_token);
+                        }
+                        if( notify_tokens.length > 0 ) {
+                            push_message = Event.myEvent.name+' '+$filter('translate')('event_push_canceled');
+                            PushService.send(notify_tokens, push_message, payload);
+                        }
                         $state.go('events');
                     }).catch(function(error){
                         ErrorHandler.error('EventShowController', 'deleteEvent()', error.message);
@@ -586,7 +627,7 @@ console.log('Release');
         $scope.isShowDetailPanel = true;
         $scope.detailPanelScrollUp = 0;
         //var scroll = $ionicScrollDelegate.$getByHandle('chatScroll').getScrollPosition().top;
-        $scope.chatMarginTop = $scope.item.firstRowHeight + 53;
+        $scope.chatMarginTop = $scope.item.firstRowHeight + 50;
 
         $timeout(function() {
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
@@ -728,7 +769,7 @@ console.log('Release');
                 colletionItemWidth: 40
             };
 
-        $scope.chatMarginTop = $scope.item.firstRowHeight + 53;
+        $scope.chatMarginTop = $scope.item.firstRowHeight + 47;
 
         if($scope.showEvent && $scope.showEvent.participants) {
             if( $scope.showEvent.participants.length > 6 )
@@ -832,6 +873,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
             Event.myEvent.id = savedEvent.id;
             Event.myEvent._id = savedEvent.id;
+            Event.myEvent.updatedAt = savedEvent.updatedAt;
             if($scope.isNew) {
                 Participant.store(Event.myEvent, Parse.User.current(), true);
             }

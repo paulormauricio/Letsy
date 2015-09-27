@@ -78,6 +78,8 @@ angular.module('letsy.lang_pt_pt', [])
 	event_push_invite: 'Recebeste um convite para ',
 	event_push_new_friend: ' juntou-se ao Letsy. Adiciona-o aos teus eventos...',
 	event_push_uninvite: 'foi cancelado',
+	event_push_user_join: ' vai ao evento ',
+	event_push_user_left: ' saiu do evento ',
 	event_push_canceled: 'foi cancelado',
 	event_theme_choose: 'Tema do evento',
 	event_what: 'O que planeias fazer?',

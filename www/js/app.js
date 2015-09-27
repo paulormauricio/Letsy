@@ -2,7 +2,6 @@ angular.module('letsy',
     [
       'ionic',
       'ngCordova',
-      'firebase',
       'ionic.service.core',
       'ionic.service.push',
       'ion-autocomplete',

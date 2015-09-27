@@ -180,7 +180,7 @@ h1.title img {
 }
 
 .loading-container {
-	display: flex !important;
+	/*display: flex !important;*/
 }
 .loading-container .loading {
 	padding: 23px 20px 17px;
@@ -702,7 +702,7 @@ i.edit {
 #chats .chat-bubble {
 	border-radius: 4px;
 	display: inline-block;
-	padding: 5px 15px;
+	padding: 3px 15px;
 	position: relative;
 	margin: 4px;
 	max-width: 80%;
@@ -783,7 +783,7 @@ i.edit {
 }
 
 #chats .message {
-	font-size: 11px;
+	font-size: 10px;
 }
 #chats .message-wrapper {
 	position: relative;
@@ -1333,7 +1333,7 @@ i.edit {
 	visibility: visible !important;
 	height: auto;
 	min-height: inherit;
-	display: inherit;
+	/*display: inherit;*/
 }
 
 .noClick.activated {

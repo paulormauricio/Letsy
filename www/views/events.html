@@ -12,7 +12,7 @@
 
 <div style="position: fixed; left: 0px; right: 0px; top: 50px; bottom: 0px; background-color: white;"></div>
 
-<ion-content has-bouncing="true">
+<ion-content>
     <ion-refresher pulling-icon="{{isIOS ? 'ion-chevron-down' : 'ion-android-arrow-down'}}" pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()" class="themeColor"></ion-refresher>
 
 <!-- My Events -->
@@ -76,7 +76,7 @@
                 </span>
             </div>
 
-            <ion-option-button class="button-assertive" ng-click="leaveEvent($index)" style="padding-left: 17px;">
+            <ion-option-button class="button-assertive" ng-click="leaveEvent(newEvent, $index); $event.stopPropagation();" style="padding-left: 17px;">
               <i class="icon ion-ios-trash-outline"></i>
             </ion-option-button>
         </ion-item>

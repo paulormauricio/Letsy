@@ -1,4 +1,4 @@
-angular.module('letsy.ChatServices',[])
+angular.module('letsy.ChatServices',['firebase'])
 
 
 .service('Chat',
@@ -7,6 +7,7 @@ angular.module('letsy.ChatServices',[])
 		'$q', 
 		'$timeout', 
 		'$filter', 
+		'$firebase',
 		'ErrorHandler', 
 		'PushService',
 		function(
@@ -14,6 +15,7 @@ angular.module('letsy.ChatServices',[])
 			$q, 
 			$timeout, 
 			$filter, 
+			$firebase,
 			ErrorHandler,
 			PushService
 		)
@@ -23,6 +25,7 @@ angular.module('letsy.ChatServices',[])
 	var _db = new PouchDB('chats', {adapter: 'websql'});
 	var _myChats = [];
 
+	//var firechat = new Firebase("https://letsyapp.firebaseio.com/chats");
 
 	this.loadChats = function(eventID) {
 

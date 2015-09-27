@@ -114,7 +114,7 @@
     <!-- Participants -->
     <ion-item class="borderTop noPadding slower" ng-class="{'slideUp': !isShowParticipants}" ng-style="{'height': item.colletionItemWidth + 'px'}">
         <ion-scroll class="horizontalList" direction="x" scrollbar-x="false">
-            <ion-item ng-repeat="participant in showEvent.participants" style="margin: -3px 0px" ng-style="{'width': item.colletionItemWidth + 'px', 'height': item.colletionItemWidth + 'px'}" ng-click="participantClick($index)">
+            <ion-item ng-repeat="participant in showEvent.participants_aux" style="margin: -3px 0px" ng-style="{'width': item.colletionItemWidth + 'px', 'height': item.colletionItemWidth + 'px'}" ng-click="participantClick($index)">
                 <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="slower" ng-style="{'height': item.colletionItemWidth+'px', 'width': item.colletionItemWidth+'px'}">
                 <div class="title bottom" ng-class="{'hide': !participant.show}" style="background-color: rgba(0, 0, 0, .5)">
                     {{participant.first_name}} {{participant.last_name}}

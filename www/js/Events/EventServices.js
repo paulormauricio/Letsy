@@ -7,6 +7,7 @@ console.log('<------ Start Events ----------->');
 
 	var _db = new PouchDB('events', {adapter: 'websql'});
 	var _myEvents = [];
+	var _newEvents = [];
 
 	var Event = Parse.Object.extend("Event");
 	var Participant = Parse.Object.extend("Participant");
@@ -289,6 +290,7 @@ console.log('----->  Database change: ', change);
 
 		  	},results);
 
+		  	_newEvents = results;
 		    $rootScope.$apply(function() { deferred.resolve(results); });
 
 		  },
@@ -459,24 +461,25 @@ console.log('Event loaded locally: ', doc);
 		};
 
 	this.updateEventLocally = function(myEvent) {
-		console.log('updateEventLocally');
+		console.log('updateEventLocally: ', myEvent);
 		myEvent._id = myEvent.id;
 		return $q.when(_db.get(myEvent.id)
 			.then(function (doc) {
 				doc.updatedAt = new Date(doc.updatedAt);
 
-				if( myEvent.updatedAt > doc.updatedAt  ) {
+				if( myEvent.updatedAt >= doc.updatedAt  ) {
 					myEvent._rev = doc._rev;
 					// Serialize participants
 					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-					_db.put(myEvent).then(function(res){console.log('Put new event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',error.message);})
+					_db.put(myEvent).then(function(res){console.log('update event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',error.message);})
 					// Unserialize participants
 					myEvent.participants = angular.fromJson(myEvent.participants);
 					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
 				}
 			})
 			.catch(function(error) {
+
 				if( error.name === 'not_found') {
 					console.log('Document not found in local DB');
 					myEvent.participants = angular.toJson(myEvent.participants, false);
@@ -495,6 +498,11 @@ console.log('Event loaded locally: ', doc);
 	this.resetMyEvent = function() {
 		this.myEvent = null;
 	};
+	this.removeFromNewEvents = function(eventId) {
+		console.log('removeFromNewEvents: ', eventId);
+		var index = findIndex(_newEvents, eventId);
+		_newEvents.splice(index, 1);
+	}
 
 	this.deletePlace = function() {
 		this.myEvent.place_id = undefined;
@@ -509,12 +517,16 @@ console.log('Event loaded locally: ', doc);
 
 	this.leaveEvent = function(myEvent) {
 		onDatabaseChange({doc: myEvent, deleted: true, id: myEvent._id});
-		$q.when(_db.remove(myEvent)).then(function(){
+		$q.when(_db.remove(myEvent).then(function(){
 			console.log('Event left: ', myEvent);
 		})
-		.catch(function(){
+		.catch(function(error){
 			console.log('Event.leaveEvent() Error: ', error.message);
-		});
+		}));
+	}
+
+	this.notifyHost = function(myEvent, message) {
+		console.log('Push Notify Host: ', message);
 	}
 
 	this.destroy = function() {
@@ -663,6 +675,7 @@ console.log('Event loaded locally: ', doc);
 		},
 
 		delete: function (participantId) {
+			console.log('Participant.delete: ', participantId);
 			var participant = new Participant();
 			participant.id = participantId;
 			participant.destroy({
