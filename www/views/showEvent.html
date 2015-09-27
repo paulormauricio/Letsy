@@ -161,7 +161,7 @@
             <button class="button button-icon icon ion-camera footer-btn"></button>
         </div>
         <label class="item-input-wrapper">
-            <textarea id="inputMessage" ng-model="newMessage" value="" placeholder="{{'chat_new' | translate}}" required minlength="1" maxlength="250" msd-elastic></textarea>
+            <textarea id="inputMessage" ng-model="newMessage" value="" placeholder="{{'chat_new' | translate}}" ng-focus="hideDetailPanel()" required minlength="1" maxlength="250" msd-elastic></textarea>
         </label>
         <div class="footer-btn-wrap">
             <button class="button button-clear footer-btn right" type="submit" ng-disabled="!newMessage || newMessage === ''" translate="chat_send">

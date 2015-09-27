@@ -100,6 +100,7 @@ angular.module('letsy.ChatServices',['firebase'])
 
 	$rootScope.$on('newChatFromPush', function(event, args) {
 	    this.save(args.newChat);
+	    ErrorHandler.debug('ChatService', 'Chat.$on:newChatFromPush',args);
 	});
 
 	this.save = function(newChat) {

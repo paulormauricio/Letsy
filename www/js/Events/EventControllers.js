@@ -599,14 +599,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
             $scope.imageResizeHeight = -1*scroll/6;
         }
         else if( scroll >= $scope.item.firstRowHeight || event.gesture.velocityY > 0.3) {
-            $scope.isShowDetailPanel = false;
-            $scope.isEdit = false;
-            $scope.chatMarginTop = 0;
-            
-            $timeout(function() {
-                $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
-            }, 100);
-            console.log('hideDetailPanel');
+            $scope.hideDetailPanel();
         }
         else {
             //console.log('Reduce panel. Scroll = ', scroll);
@@ -620,6 +613,17 @@ console.log('Release');
             $scope.detailPanelScrollUp = 0;
             $scope.imageResizeHeight = 0;
         }
+    }
+
+    $scope.hideDetailPanel = function() {
+        $scope.isShowDetailPanel = false;
+        $scope.isEdit = false;
+        $scope.chatMarginTop = 0;
+        
+        $timeout(function() {
+            $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
+        }, 100);
+        console.log('hideDetailPanel');
     }
 
     $scope.showDetailPanel = function() {
