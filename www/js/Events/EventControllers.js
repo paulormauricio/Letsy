@@ -10,6 +10,7 @@ angular.module('letsy.EventControllers',[])
         '$ionicPopup',
         '$filter',
         '$rootScope',
+        '$timeout',
         'Event', 
         'Participant', 
         'ErrorHandler',
@@ -24,6 +25,7 @@ angular.module('letsy.EventControllers',[])
             $ionicPopup,
             $filter,
             $rootScope,
+            $timeout,
             Event,
             Participant,
             ErrorHandler,
@@ -107,9 +109,11 @@ console.log('<---------- Refresh events ----------->');
 
         Theme.incrementUsage(newEvent.theme);
 
-        $scope.newEvents.splice(index, 1);
-        $scope.myEvents.push(newEvent);
-        Event.updateEventLocally(newEvent);
+        $timeout(function() {
+            $scope.newEvents.splice(index, 1);
+            $scope.myEvents.push(newEvent);
+            Event.updateEventLocally(newEvent);
+        });
         //Notify event host
         Event.notifyHost(newEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+newEvent.name );
     }
@@ -145,21 +149,23 @@ console.log('<---------- Refresh events ----------->');
     }
 
     function calculateColectionItemSize() {
-        var width =  $window.innerWidth;
-        $scope.item = {width: 0, height: 0};
-        if( width > 700 ) {
-            $scope.item.width = 120 + 'px';
-        }
-        else if( width > 550 ) {
-            $scope.item.width = (width / 4 - 3) + 'px';
-        }
-        else if( width > 400 ) {
-            $scope.item.width = (width / 3 - 3) + 'px';
-        }
-        else {
-            $scope.item.width = (width / 2 - 3) + 'px';
-        }
-        $scope.item.height = $scope.item.width;
+        $timeout(function() {
+            var width =  $window.innerWidth;
+            $scope.item = {width: 0, height: 0};
+            if( width > 700 ) {
+                $scope.item.width = 120 + 'px';
+            }
+            else if( width > 550 ) {
+                $scope.item.width = (width / 4 - 3) + 'px';
+            }
+            else if( width > 400 ) {
+                $scope.item.width = (width / 3 - 3) + 'px';
+            }
+            else {
+                $scope.item.width = (width / 2 - 3) + 'px';
+            }
+            $scope.item.height = $scope.item.width;
+        });
     }
 }])
 
@@ -210,7 +216,18 @@ console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
-    $scope.myFacebookId = Parse.User.current().get('facebookId');
+    
+    $timeout(function() {
+        $scope.myFacebookId = Parse.User.current().get('facebookId');
+        $scope.isEdit = false;
+        $scope.isShowJoinButton = false;
+        $scope.isShowEditButton = false;
+        $scope.isShowDetailPanel = true;
+        $scope.detailPanelScrollUp = 0;
+        $scope.imageResizeHeight = 0;
+        $scope.chatMarginTop = 0;
+        $scope.chatMarginBottom = 0;
+    });
 
     if( !Event.showEvent.id ) {
         Event.get($stateParams.objectId).then(function(object) {
@@ -235,16 +252,8 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     var currentLocation = {};
-    $scope.isEdit = false;
-    $scope.isShowJoinButton = false;
-    $scope.isShowEditButton = false;
-    $scope.isShowDetailPanel = true;
-    $scope.detailPanelScrollUp = 0;
-    $scope.imageResizeHeight = 0;
-    $scope.chatMarginTop = 0;
-    $scope.chatMarginBottom = 0;
     loadChat();
-
+    
 
     function loadEventDetail() {
 
@@ -341,8 +350,8 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
         var tokens = [$rootScope.myToken];
         Chat.send($stateParams.objectId, newMessage, tokens).then(function(){
             $scope.newMessage = '';
-            $window.document.getElementById("inputMessage").focus();
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
+            $window.document.getElementById("inputMessage").focus();
             console.log('scrollBottom');
         });
         
@@ -411,23 +420,25 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
         });
 
         Theme.incrementUsage($scope.showEvent.theme);
-
         Participant.updateByEvent($scope.showEvent, Parse.User.current(), true);
-        $scope.isShowJoinButton = false;
-        $scope.isShowEditButton = true;
-
+        
         // Remove event from newEvents list
         Event.removeFromNewEvents($scope.showEvent.id);
 
-        for (var i = 0; i<$scope.showEvent.participants_all.length; i++) {
-            if($scope.showEvent.participants_all[i].facebookId == Parse.User.current().get('facebookId')) {
-                $scope.showEvent.participants_all[i].isGoing = true;
-                $scope.showEvent.participants.push($scope.showEvent.participants_all[i]);
-                $scope.showEvent.totalParticipants++;
-                break;
+        $timeout(function() {
+            $scope.isShowJoinButton = false;
+            $scope.isShowEditButton = true;
+
+            for (var i = 0; i<$scope.showEvent.participants_all.length; i++) {
+                if($scope.showEvent.participants_all[i].facebookId == Parse.User.current().get('facebookId')) {
+                    $scope.showEvent.participants_all[i].isGoing = true;
+                    $scope.showEvent.participants.push($scope.showEvent.participants_all[i]);
+                    $scope.showEvent.totalParticipants++;
+                    break;
+                }
             }
-        }
-        Event.updateEventLocally($scope.showEvent);
+            Event.updateEventLocally($scope.showEvent);
+        });
 
         //Notify event host
         Event.notifyHost($scope.showEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+$scope.showEvent.name );
@@ -630,28 +641,33 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
     $scope.releaseDetailPanel = function() {
 console.log('Release');
         if( $scope.isShowDetailPanel ) {
-            $scope.detailPanelScrollUp = 0;
-            $scope.imageResizeHeight = 0;
+            $timeout(function() {
+                $scope.detailPanelScrollUp = 0;
+                $scope.imageResizeHeight = 0;
+            });
         }
     }
 
     $scope.hideDetailPanel = function() {
-        $scope.isShowDetailPanel = false;
-        $scope.isEdit = false;
-        $scope.chatMarginTop = 0;
+        $timeout(function() {
+            $scope.isShowDetailPanel = false;
+            $scope.isEdit = false;
+            $scope.chatMarginTop = 0;
+        });
         
         $timeout(function() {
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
-        }, 100);
+        }, 200);
         console.log('hideDetailPanel');
     }
 
     $scope.showDetailPanel = function() {
         console.log('showDetailPanel');
-        $scope.isShowDetailPanel = true;
-        $scope.detailPanelScrollUp = 0;
-        //var scroll = $ionicScrollDelegate.$getByHandle('chatScroll').getScrollPosition().top;
-        $scope.chatMarginTop = $scope.item.firstRowHeight + 50;
+        $timeout(function() {
+            $scope.isShowDetailPanel = true;
+            $scope.detailPanelScrollUp = 0;
+            $scope.chatMarginTop = $scope.item.firstRowHeight + 50;
+        });
 
         $timeout(function() {
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
@@ -786,23 +802,25 @@ console.log('Release');
     });
 
     function calculateScreenSize() {
-        $scope.item = {
-                height: $window.innerHeight,
-                width:  $window.innerWidth,
-                firstRowHeight: $window.innerHeight - 300,
-                colletionItemWidth: 40
-            };
+        $timeout(function() {
+            $scope.item = {
+                    height: $window.innerHeight,
+                    width:  $window.innerWidth,
+                    firstRowHeight: $window.innerHeight - 300,
+                    colletionItemWidth: 40
+                };
 
-        $scope.chatMarginTop = $scope.item.firstRowHeight + 47;
+            $scope.chatMarginTop = $scope.item.firstRowHeight + 47;
 
-        if($scope.showEvent && $scope.showEvent.participants) {
-            if( $scope.showEvent.participants.length > 6 )
-                $scope.item.colletionItemWidth = $scope.item.width / 8;
-            else if( $scope.showEvent.participants.length > 15 )
-                $scope.item.colletionItemWidth = $scope.item.width / 10;
-            else
-                $scope.item.colletionItemWidth = $scope.item.width / 6;
-        }
+            if($scope.showEvent && $scope.showEvent.participants) {
+                if( $scope.showEvent.participants.length > 6 )
+                    $scope.item.colletionItemWidth = $scope.item.width / 8;
+                else if( $scope.showEvent.participants.length > 15 )
+                    $scope.item.colletionItemWidth = $scope.item.width / 10;
+                else
+                    $scope.item.colletionItemWidth = $scope.item.width / 6;
+            }
+        });
     }
 
 }])
@@ -1080,6 +1098,7 @@ console.log('Event.myEvent: ', Event.myEvent);
         Event.save($scope.isNew).then(function(savedEvent) {
             Event.myEvent.id = savedEvent.id;
             Event.myEvent._id = savedEvent.id;
+console.log('Event.myEvent after save: ', savedEvent);
             Participant.store(Event.myEvent, Parse.User.current(), true);
             
             notifyParticipants();

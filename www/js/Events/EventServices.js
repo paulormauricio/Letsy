@@ -418,7 +418,7 @@ console.log('Event loaded locally: ', doc);
 				saveEvent.id = this.myEvent.id;
 			}
 			var myEvent_temp = {
-				id: 	this.myEvent.id,
+				// id: 	this.myEvent.id,
 				isDeleted:	this.myEvent.isDeleted ? true : false
 			};
 
@@ -441,7 +441,7 @@ console.log('Event loaded locally: ', doc);
 			  	myEvent_temp.id = newEvent.id;
 				myEvent_temp._id = newEvent.id;
 				myEvent_temp.updatedAt = newEvent.updatedAt;				
-
+console.log('saved newEvent: ', newEvent);
 				//Add to local database
 				$q.when(_db.get(myEvent_temp._id)
 					.then(function(doc) {
@@ -460,7 +460,7 @@ console.log('Event loaded locally: ', doc);
 				);
 				
 				onDatabaseChange({doc: myEvent_temp, deleted: false, id: myEvent_temp._id});
-
+console.log('saved newEvent2: ', newEvent);
 			  	$rootScope.$apply(function() { deferred.resolve(newEvent); });
 
 			  },
@@ -638,6 +638,8 @@ console.log('Event loaded locally: ', doc);
             participant.set('isNotified', isOwner);
 			participant.set('isGoing', isOwner);
 
+console.log('saveEvent before store Participant:', saveEvent);
+
 			var query = new Parse.Query(Participant);
 			query.equalTo("Event", saveEvent );
 			query.equalTo("User", user );
@@ -733,7 +735,7 @@ console.log('Event loaded locally: ', doc);
 console.log('<------ Theme Load ----------->');
 			themes = $filter('orderBy')(staticThemes, '-totalUsage');
 
-			_db.bulkDocs(staticThemes).then(function (result) {
+			_db.bulkDocs(themes).then(function (result) {
 				console.log('Themes: staticThemes stores successfully', result);
 			}).catch(function (error) {
 				ErrorHandler.error('EventServices', 'Theme.init()',error);
