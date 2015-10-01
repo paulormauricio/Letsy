@@ -21,7 +21,7 @@
     <ion-scroll class="collectionList">
         <ion-item ng-click="storeName(theme)" class="cover opacity" 
                   ng-repeat="theme in themes"
-                  ng-show="([theme]|themeSearch:editEvent.name).length"
+                  ng-show="([theme]|themeSearch:editEvent.name).length && ($index < 8 || editEvent.name.length > 2)"
                   ng-style="{'width': item.width, 'height': item.height}">
             <img ng-src="{{'img/themeIcon/'+theme.name+'.png'}}" class="imageOpacity">
         </ion-item>
@@ -29,7 +29,7 @@
                   ng-style="{'width': item.width, 'height': item.height}"
                   ng-show="editEvent.name.length > 0">
                   <img ng-src="{{'img/themeIcon/_.png'}}" class="imageOpacity">
-                  <h3 class="bottomHalf small hidden">{{editEvent.name}}</h3>
+                  <h3 class="bottomHalf small hidden" translate="other"></h3>
         </ion-item>
     </ion-scroll>
 

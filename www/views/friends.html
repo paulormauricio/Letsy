@@ -10,7 +10,7 @@
         <ion-list>
             <a class="item item-avatar" ng-repeat="object in objects | orderBy : object.first_name + object.last_name">
                 <img ng-src="https://graph.facebook.com/v2.2/{{object.facebookId}}/picture??type=small">
-                <span class="middle">{{object.first_name}} {{object.last_name}}</span>
+                <span class="middle">{{::object.first_name}} {{::object.last_name}}</span>
             </a>
         </ion-list>
     </ion-content>

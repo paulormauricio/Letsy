@@ -1,6 +1,7 @@
 angular.module('letsy.lang_pt_pt', [])
 
 .constant('lang_pt_pt', {
+	acknowledgements: 'Créditos e agradecimentos',
 	cancel: 'Cancelar',
 	closed_now: 'Encerrado agora',
 	continue: 'Continuar',
@@ -86,6 +87,7 @@ angular.module('letsy.lang_pt_pt', [])
 	event_when: 'Quando?',
 	event_where: 'Onde?',
 	event_who: 'Quem?',
+	events_store_calendar: 'Guardar eventos no calendario',
 
 	internet_disconnected: 'Internet desligada',
 	internet_disconnected_desc: 'Enquanto offline apenas podes consultar os teus eventos.',
@@ -106,6 +108,9 @@ angular.module('letsy.lang_pt_pt', [])
 
 	slideUp_hide: 'Esconder',
 
+
+
+//  Generated via excel
 	beach: 'Ir à praia',
 	beer: 'Beber um copo',
 	burger: 'Humburger',

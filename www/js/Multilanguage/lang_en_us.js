@@ -1,6 +1,7 @@
 angular.module('letsy.lang_en_us', [])
 
 .constant('lang_en_us', {
+	acknowledgements: 'Credits and acknowledgements',
 	cancel: 'Cancel',
 	closed_now: 'Closed now',
 	continue: 'Continue',
@@ -86,6 +87,7 @@ angular.module('letsy.lang_en_us', [])
 	event_when: 'When?',
 	event_where: 'Where?',
 	event_who: 'Who?',
+	events_store_calendar: 'Store events in calendar',
 
 	internet_disconnected: 'Internet not connected',
 	internet_disconnected_desc: 'While disconnected you can only browse your current events.',
@@ -106,6 +108,9 @@ angular.module('letsy.lang_en_us', [])
 
 	slideUp_hide: 'Hide',
 
+
+
+//  Generated via excel
 	beach: 'Going to the beach',
 	beer: 	'Have a drink',
 	burger: 'Have a burguer',

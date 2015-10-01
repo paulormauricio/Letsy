@@ -77,7 +77,8 @@ angular.module('letsy.IonicServices',[])
 
 		    // Add some metadata to your user object.
 		    angular.extend(user, {
-		      name: Parse.User.current().get('name')
+		      name: Parse.User.current().get('name'),
+		      app_version: 0.1
 		    });
 
 		    // Identify your user with the Ionic User Service

@@ -4,7 +4,7 @@
     <button class="button button-clear left" ng-click="back(); $event.stopPropagation();" ng-hide="isEdit">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel}">{{showEvent.name}}</h1>
+    <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
     <button ng-switch="isEdit" class="button button-clear right invisible" ng-class="{'visible':isShowEditButton && !isOffline && isShowDetailPanel}" ng-click="toggleEdit()">
         <span ng-switch-when="false">
             <i class="ion-edit"></i>
@@ -36,15 +36,15 @@
 
         <h1 ng-show="showEvent.name"
             ng-click="editName()"
-            class="topHalf centered" ng-class="{'showClick': isEdit}">
-            {{showEvent.name}}
+            class="topHalf centered" ng-class="{'showClick': isEdit, 'lower': !showEvent.place_name}">
+            {{::showEvent.name}}
             <span ng-class="{'visible': isEdit}" class="editButton invisible">
                 <i class="icon ion-edit edit" style="padding-top: 5px; top: -8px;"></i>
             </span>
         </h1>   
         <h2 ng-show="showEvent.place_name"
             class="bottomHalf centered">
-            {{showEvent.place_name}}
+            {{::showEvent.place_name}}
         </h2>
 
     </ion-item>
@@ -86,7 +86,7 @@
                         <span ng-switch="!showEvent.place_lat || !showEvent.place_lng">
                             <span ng-switch-when="true">
                                 <i class="ion-location"></i>
-                                {{showEvent.place_name}}
+                                {{::showEvent.place_name}}
                             </span>
                             <span ng-switch-when="false">
                                 <i class="ion-map"></i>
@@ -102,8 +102,8 @@
                 </div>
             </div>
             <div class="col showClick" ng-click="editParticipants()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
-                <i class="ion-person-stalker"></i>
-                <div class="title larger">{{showEvent.totalParticipants}}</div>
+                <i class="ion-person-stalker" ng-show="showEvent.totalParticipants"></i>
+                <div class="title larger">{{::showEvent.totalParticipants}}</div>
                 <span ng-class="{'visible': isEdit}" class="editButton invisible">
                     <i class="icon ion-edit edit"></i>
                 </span>
@@ -114,10 +114,10 @@
     <!-- Participants -->
     <ion-item class="borderTop noPadding slower" ng-class="{'slideUp': !isShowParticipants}" ng-style="{'height': item.colletionItemWidth + 'px'}">
         <ion-scroll class="horizontalList" direction="x" scrollbar-x="false">
-            <ion-item ng-repeat="participant in showEvent.participants_aux" style="margin: -3px 0px" ng-style="{'width': item.colletionItemWidth + 'px', 'height': item.colletionItemWidth + 'px'}" ng-click="participantClick($index)">
+            <ion-item ng-repeat="participant in showEvent.participants_all" style="margin: -3px 0px" ng-style="{'width': item.colletionItemWidth + 'px', 'height': item.colletionItemWidth + 'px'}" ng-click="participantClick($index)">
                 <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="slower" ng-style="{'height': item.colletionItemWidth+'px', 'width': item.colletionItemWidth+'px'}">
                 <div class="title bottom" ng-class="{'hide': !participant.show}" style="background-color: rgba(0, 0, 0, .5)">
-                    {{participant.first_name}} {{participant.last_name}}
+                    {{::participant.first_name}} {{::participant.last_name}}
                 </div>
                 <span class="stamp bottom small" ng-switch="participant.isGoing">
                     <i ng-switch-when="true" class="ion-ios-checkmark balanced"></i>

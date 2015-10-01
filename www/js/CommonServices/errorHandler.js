@@ -89,7 +89,7 @@ console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> exceptions inside angular');
   // catch exceptions out of angular
   window.onerror = function(message, url, line, col, error){
 console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> exceptions outside angular');
-      var stopPropagation = true;
+      var stopPropagation = false;
       var data = {};
       if(message)       { data.message      = message;      }
       if(url)           { data.fileName     = url;          }

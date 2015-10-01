@@ -9,9 +9,11 @@ angular.module('letsy.SettingsControllers', [])
       '$timeout',
       '$translate',
       '$ionicPopup',
+      '$ionicHistory',
       'Settings', 
       'Event',
       'Chat',
+      'Theme',
       function(
         $scope, 
         $state, 
@@ -20,9 +22,11 @@ angular.module('letsy.SettingsControllers', [])
         $timeout,
         $translate,
         $ionicPopup,
+        $ionicHistory,
         Settings,
         Event,
-        Chat
+        Chat,
+        Theme
       )
     {
 console.log('');
@@ -75,6 +79,7 @@ console.log('<<<<<<-----------   Settings Screen  ---------->>>>>');
         cancelType: 'button-stable'
       }).then(function(result) {
         if(result) {
+
           facebookConnectPlugin.logout(
             function (success) {
               $state.go('login');
@@ -84,12 +89,23 @@ console.log('<<<<<<-----------   Settings Screen  ---------->>>>>');
           
           Parse.User.logOut();
 
-          Event.destroy();
-          Chat.destroy();
+          $timeout(function () {
 
-          //ionic.Platform.exitApp();
+            Event.destroy();
+            Chat.destroy();
+            Theme.destroy();
+
+            $ionicHistory.clearCache();
+            $ionicHistory.clearHistory();
+            $ionicHistory.nextViewOptions({ disableBack: true, historyRoot: true });
+
+            ionic.Platform.exitApp();
+
+            $state.go('login');
+          });
+
           
-          $state.go('login');
+          
         }
 
       });

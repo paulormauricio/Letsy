@@ -1,4 +1,4 @@
-angular.module('letsy.EventServices',[])
+angular.module('letsy.EventServices',['letsy.EventThemes'])
 
 
 .service('Event',['$rootScope', '$q', '$timeout', '$filter', 'ErrorHandler','PushService', function($rootScope, $q, $timeout, $filter, ErrorHandler, PushService){
@@ -21,6 +21,10 @@ console.log('<------ Start Events ----------->');
     //_db.changes({ live: true, since: 'now', include_docs: true}).on('change', onDatabaseChange);
 
 	this.loadMyEvents = function() {
+		return loadLocalEvents();
+	}
+
+	function loadLocalEvents() {
 
 		if( this.isForceGetEvents ) {
 			console.log('Force get MyEvents');
@@ -33,7 +37,7 @@ console.log('<------ Start Events ----------->');
 		}
 
 	    if (_myEvents.length == 0) {
-
+	    	console.log('Load MyEvents from local storage');
 	    	var currDate = $filter('date')(new Date(), 'yyyy-MM-dd' );
 
 	       return $q.when(_db.createIndex({
@@ -80,7 +84,8 @@ console.log('<------ Start Events ----------->');
 	                    return doc;
 	                });
 	                _myEvents = _myEvents.concat(events_withoutDate);
-	                //console.log('_myEvents: ', _myEvents);
+
+	                console.log('_myEvents: ', _myEvents);
 	                return _myEvents;
 				})
 				.catch(function(err){console.log('Load Docs Error: ', err); return [];}));
@@ -91,6 +96,7 @@ console.log('<------ Start Events ----------->');
 	        return $q.when(_myEvents);
 	    }
 	}
+
 
 
 	function onDatabaseChange(change) {  
@@ -108,6 +114,7 @@ console.log('----->  Database change: ', change);
 	            _myEvents.splice(index, 0, change.doc) // insert
 	        }
 	    }
+	    console.log('_myEvents:', _myEvents);
 
 	}
 	// Binary search, the array is by default sorted by _id.
@@ -154,6 +161,7 @@ console.log('----->  Database change: ', change);
 
 				result.name = object.get('Event').get('name');
 				result.theme = object.get('Event').get('theme');
+				result.background_url = object.get('Event').get('background_url');
 				result.place_id = object.get('Event').get('place_id');
 				result.place_name = object.get('Event').get('place_name');
 				result.place_address = object.get('Event').get('place_address');
@@ -275,6 +283,7 @@ console.log('----->  Database change: ', change);
 				result.participantId = object.id;
 				result.name = object.get('Event').get('name');
 				result.theme = object.get('Event').get('theme');
+				result.background_url = object.get('Event').get('background_url');
 				result.place_id = object.get('Event').get('place_id');
 				result.place_name = object.get('Event').get('place_name');
 				result.place_address = object.get('Event').get('place_address');
@@ -350,6 +359,7 @@ console.log('Event loaded locally: ', doc);
 				result._id = object.id;
 				result.name = object.get('name');
 				result.theme = object.get('theme');
+				result.background_url = object.get('background_url');
 				result.place_id = object.get('place_id');
 				result.place_name = object.get('place_name');
 				result.place_address = object.get('place_address');
@@ -409,18 +419,20 @@ console.log('Event loaded locally: ', doc);
 			}
 			var myEvent_temp = {
 				id: 	this.myEvent.id,
-				name: 	this.myEvent.name,
-				theme: 	this.myEvent.theme,
-				place_id: 	this.myEvent.place_id,
-				place_name: this.myEvent.place_name,
-				place_address: this.myEvent.place_address,
-				place_image_url: this.myEvent.place_image_url,
-				place_lat: 	this.myEvent.place_lat,
-				place_lng: 	this.myEvent.place_lng,
-				date: 		this.myEvent.date,
-				createdBy:	this.myEvent.createdBy,
 				isDeleted:	this.myEvent.isDeleted ? true : false
 			};
+
+			if(this.myEvent.name) 			myEvent_temp.name = this.myEvent.name;
+			if(this.myEvent.theme) 			myEvent_temp.theme = this.myEvent.theme;
+			if(this.myEvent.background_url) myEvent_temp.background_url = this.myEvent.background_url;
+			if(this.myEvent.place_id) 		myEvent_temp.place_id = this.myEvent.place_id;
+			if(this.myEvent.place_name) 	myEvent_temp.place_name = this.myEvent.place_name;
+			if(this.myEvent.place_address) 	myEvent_temp.place_address = this.myEvent.place_address;
+			if(this.myEvent.place_image_url) myEvent_temp.place_image_url = this.myEvent.place_image_url;
+			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
+			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
+			if(this.myEvent.date) 			myEvent_temp.date = this.myEvent.date;
+			if(this.myEvent.createdBy) 		myEvent_temp.createdBy = this.myEvent.createdBy;
 
 			saveEvent.save( myEvent_temp , {
 			  success: function(newEvent) {
@@ -460,30 +472,46 @@ console.log('Event loaded locally: ', doc);
 			return deferred.promise;
 		};
 
+	function myDeltaFunction(doc) {
+		doc.counter = doc.counter || 0;
+		doc.counter++;
+		return doc;
+	}
+
 	this.updateEventLocally = function(myEvent) {
 		console.log('updateEventLocally: ', myEvent);
 		myEvent._id = myEvent.id;
 		return $q.when(_db.get(myEvent.id)
 			.then(function (doc) {
 				doc.updatedAt = new Date(doc.updatedAt);
-
-				if( myEvent.updatedAt >= doc.updatedAt  ) {
+//				if( myEvent.updatedAt >= doc.updatedAt  ) {
 					myEvent._rev = doc._rev;
 					// Serialize participants
 					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-					_db.put(myEvent).then(function(res){console.log('update event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',error.message);})
+					_db.upsert(myEvent.id, myDeltaFunction).then(function (res) {
+						console.log('update event: ', res);
+					}).catch(function(error){
+						ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',{error: error, object: myEvent});
+					});
+
 					// Unserialize participants
 					myEvent.participants = angular.fromJson(myEvent.participants);
 					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
-				}
+//				}
 			})
 			.catch(function(error) {
 
 				if( error.name === 'not_found') {
 					console.log('Document not found in local DB');
 					myEvent.participants = angular.toJson(myEvent.participants, false);
-					_db.put(myEvent).then(function(res){console.log('Put new event: ', res);}).catch(function(error){ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Put new doc',error.message);})
+
+					_db.upsert(myEvent.id, myDeltaFunction).then(function (res) {
+						console.log('Put new event: ', res);
+					}).catch(function(error){
+						ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Put new doc',{error: error, object: myEvent});
+					});
+
 					myEvent.participants = angular.fromJson(myEvent.participants);
 					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
 				}
@@ -571,6 +599,7 @@ console.log('Event loaded locally: ', doc);
 						result.id = object.get('User').id;
 						result.participantId = object.id;
 						result.facebookId = object.get('User').get('facebookId');
+						result.name = object.get('User').get('name');
 						result.first_name = object.get('User').get('first_name');
 						result.last_name = object.get('User').get('last_name');
 						result.isGoing = object.get('isGoing');
@@ -692,33 +721,89 @@ console.log('Event loaded locally: ', doc);
    }
 }])
 
-.factory('Theme',['$rootScope', '$q', '$timeout', function($rootScope, $q, $timeout){
+.factory('Theme',['$rootScope', '$q', '$http', '$timeout', 'ErrorHandler', 'staticThemes', '$filter', function($rootScope, $q, $http, $timeout, ErrorHandler, staticThemes, $filter){
 
-	var themes = [
-		{name: 'beach', 	tags_en_us: 'beach, sand, sea, sun',	tags_pt_pt: 'praia, areia, mar, sol'},
-		{name: 'beer', 		tags_en_us: 'beers, drinks, party',		tags_pt_pt: 'cervejas, bebidas, festas'},
-		{name: 'burger', 	tags_en_us: 'hamburger, lunch, dinner',	tags_pt_pt: 'humburger, comer, almoçar, jantar'},
-		{name: 'cocktail', 	tags_en_us: 'drinks, cocktails, party', tags_pt_pt: 'bebidas, beber, copo, cocktails, festas'},
-		{name: 'cycling', 	tags_en_us: 'cycling, cycle, ride', 	tags_pt_pt: 'bicicletas, andar, passear'},
-		{name: 'drinks', 	tags_en_us: 'drinks, party', 			tags_pt_pt: 'bebidas, beber, copo, festas'},
-		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 		tags_pt_pt: 'jantar, comer, almoçar, almoço'},
-		{name: 'football', 	tags_en_us: 'play, football', 			tags_pt_pt: 'jogar, futebol, bola'},
-		{name: 'golf',	 	tags_en_us: 'golf, play',				tags_pt_pt: 'golf, jogar'},
-		{name: 'rugby', 	tags_en_us: 'rugby, play',				tags_pt_pt: 'rugby, jogar, rugbi'},
-		{name: 'running', 	tags_en_us: 'run, running', 			tags_pt_pt: 'correr, corrida, caminhar, caminhada'},
-		{name: 'surf',	 	tags_en_us: 'surfing, waves',			tags_pt_pt: 'surfing, surfar, ondas'}
-	];
+	var _db = new PouchDB('themes', {adapter: 'websql'});
+
+	var themes = [];
 
 	return {
 
+		init: function() {
+console.log('<------ Theme Load ----------->');
+			themes = themes = $filter('orderBy')(staticThemes, '-totalUsage');
+
+			_db.bulkDocs(staticThemes).then(function (result) {
+				console.log('Themes: staticThemes stores successfully', result);
+			}).catch(function (error) {
+				ErrorHandler.error('EventServices', 'Theme.init()',error);
+			});
+
+		},
+
 		getAll: function() {
 			var deferred = $q.defer();
+			console.log('themes: ', themes);
 
-			$timeout(function() {
-				$rootScope.$apply(function() { deferred.resolve(themes); });
-			}, 1000);
+			if(themes.length===0) {
 
-			return deferred.promise;
+				return $q.when(_db.allDocs({ include_docs: true}).then(function (docs) {
+			        themes = docs.rows.map(function(doc) {
+			            return doc.doc;
+			        });
+			        return $filter('orderBy')(themes, '-totalUsage');
+				}).catch(function (error) {
+					ErrorHandler.error('EventServices', 'Theme.db.allDocs()',error.message);
+				}));	
+			}
+			else {
+				return $timeout(function() {return themes;});				
+			}
+
+		},
+
+		getUrl: function(theme) {
+
+			var url = 'http://letsy.co/fileStorage/'+theme+'/'+theme+'.jpg';
+			var options = {
+			  	headers: {
+				    'Content-Type': 'application/json'
+			  	}
+			}
+		    return $http.head(url, options).then(function(response){
+				return response.status != 404 ? url : undefined;
+		    })
+		    .catch(function(error){
+				ErrorHandler.error('EventServices', 'Theme.getUrl()',error.message);
+		    });
+		},
+
+		incrementUsage: function(theme) {
+			for (var i = 0; i < themes.length; i++) {
+				if( themes[i].name === theme ) {
+					themes[i].totalUsage++;
+					break;
+				}
+			}
+			$q.when(_db.get(theme)
+			.then(function (doc) {
+				themes = $filter('orderBy')(themes, '-totalUsage');
+				theme = doc;
+				theme.totalUsage++;
+				_db.put(theme).then(function(res){console.log(theme.name+' incrementUsage: ', theme.totalUsage);}).catch(function(error){ErrorHandler.error('EventServices', 'Theme.incrementUsage()',error.message);})
+			})
+			.catch(function(error){
+				ErrorHandler.error('EventServices', 'Theme.incrementUsage()',error.message);
+			}));
+		},
+
+		destroy: function() {
+			_db.destroy().then(function() { 
+				console.log('Themes DB deleted') 
+			})
+			.catch(function(error){
+				ErrorHandler.error('EventServices', 'Theme.destroy()',error.message);
+			});
 		}
 
    }

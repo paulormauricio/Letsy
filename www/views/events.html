@@ -20,16 +20,16 @@
 
         <ion-item class="cover coverLight" ng-repeat="myEvent in myEvents track by myEvent.id" ng-click="showEvent(myEvent)" nav-transition="ios">
 
-            <span ng-switch="myEvent.place_image_url == undefined">
+            <span ng-switch="!myEvent.background_url">
                 <div ng-switch-when="false" class="background backgroundImage" 
-                     ng-style="{'background-image': 'url('+myEvent.place_image_url+')'}"></div>
+                     ng-style="{'background-image': 'url('+myEvent.background_url+')'}"></div>
                 <div ng-switch-when="true" class="background backgroundImage" 
                      ng-style="{'background-image': 'url(img/themeIcon/'+myEvent.theme+'.png)'}" style="max-width: 220px; margin-left: -30px;"></div>
             </span>
             
-            <h2 class="topHalf">{{myEvent.name}}</h2>
+            <h2 class="topHalf" ng-class="{'lower': !myEvent.place_name, 'larger': myEvent.name.length>25}">{{::myEvent.name}}</h2>
             <h3 class="bottomHalf">{{myEvent.place_name}}</h3>
-            <div class="bottom">
+            <div class="bottom" ng-style="{'bottom': myEvent.place_name?'':'30px'}">
                 <span ng-show="myEvent.date">
                     <i class="ion-calendar"></i>
                     {{myEvent.date | prettyDateFormat }}

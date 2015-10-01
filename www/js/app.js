@@ -166,6 +166,7 @@ catch(err) {
       url:'/event/editFriends/:isNew/:objectId',
       controller:'EventEditParticipantsController',
       templateUrl:'views/editEventFriends.html',
+      cache: false,
       data: {
         authenticate: true
       }
@@ -182,6 +183,7 @@ catch(err) {
       url:'/event/editDate/:isNew/:objectId',
       controller:'EventEditDateController',
       templateUrl:'views/editEventDate.html',
+      cache: false,
       data: {
         authenticate: true
       }

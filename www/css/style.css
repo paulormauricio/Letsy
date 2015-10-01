@@ -535,7 +535,9 @@ i.edit {
 .largeList .item .topHalf {
 	bottom: 55%;
 	font-size: 21px;
-	padding: 2px 0px;
+	padding: 2px 4px;
+	margin-left: -4px;
+	white-space: normal;
 }
 .largeList .item .bottomHalf {
 	top: 45%;
@@ -546,16 +548,17 @@ i.edit {
 	font-size: 11px;
 	font-weight: normal;
 	bottom: 10px;
+	padding: 0px;
 }
 .largeList .item .bottom i {
 	font-size: 16px;
 	margin: 0px 3px 0px -2px;
-	color: #eee !important;
+	color: #efefef !important;
 }
 .largeList .item .bottom > span {
 	margin-right: 30px;
 	display: inline-block;
-	color: #eee !important;
+	color: #efefef !important;
 }
 .largeList .item button {
 	position: absolute;
@@ -1032,6 +1035,9 @@ i.edit {
 	font-weight: bold !important;
 	font-style: italic;
 }
+.topHalf.lower {
+	margin-bottom: -5%;
+}
 .bottomHalf {
 	position: absolute;
 	top: 60%;
@@ -1127,6 +1133,7 @@ i.edit {
 }
 .coverLight, .coverLight > .item-content{
 	background-color: rgb(155, 180, 187) !important;
+	background-color: rgb(140, 160, 160) !important;
 }
 .cover .item {
 	background-color: transparent;
@@ -1302,6 +1309,10 @@ i.edit {
 	font-size: 75% !important;
 }
 
+.normal {
+	font-size: 100% !important
+}
+
 .large {
 	font-size: 105% !important;
 }
@@ -1417,7 +1428,7 @@ i.edit {
 
 /***  Animations ***/
 
-.slow, .showDown, .slideUp {
+.slow, .showDown, .slideUp, .topHalf {
     -webkit-transition: all 300ms linear;
     -moz-transition: all 300ms linear;
     -ms-transition: all 300ms linear;

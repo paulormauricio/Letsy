@@ -10,6 +10,7 @@ angular.module('letsy.LoginControllers', [])
       'Language',
       'ErrorHandler',
       'PushService',
+      'Theme',
       function(
         $scope, 
         $state,
@@ -18,7 +19,8 @@ angular.module('letsy.LoginControllers', [])
         PushService,
         Language,
         ErrorHandler,
-        PushService
+        PushService,
+        Theme
       )
     {
 try {
@@ -69,8 +71,7 @@ try {
         //Get User Info
         facebookConnectPlugin.api('/me', null, 
           function(response) {
-            console.log('Facebook PersonalData: ');
-            console.log(response);
+            console.log('Facebook PersonalData: ', response);
             userObject.set('name', response.name);
             userObject.set('email', response.email);
             userObject.set('facebookId', response.id);
@@ -162,6 +163,8 @@ try {
         PushService.init();
 
         Language.set();
+
+        Theme.init();
 
         Event.isForceGetEvents = true;
 

@@ -14,6 +14,7 @@ angular.module('letsy.EventControllers',[])
         'Participant', 
         'ErrorHandler',
         'Chat',
+        'Theme',
         function( 
             $window, 
             $state, 
@@ -26,7 +27,8 @@ angular.module('letsy.EventControllers',[])
             Event,
             Participant,
             ErrorHandler,
-            Chat
+            Chat,
+            Theme
         )
     {
 
@@ -46,8 +48,11 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
         }
 console.log('<---------- Refresh events ----------->');
         Event.getMyEvents().then(function(objects) {
-            $scope.myEvents = objects;
             console.log('myEvents: ', objects);
+            if(objects.length>0)
+                $scope.myEvents = objects;
+            else 
+                loadLocalEvents();
         });
 
         Event.getNew().then(function(objects) {
@@ -60,14 +65,8 @@ console.log('<---------- Refresh events ----------->');
         });
     }
 
-    if( !$rootScope.isOffline ) {
-        Event.loadMyEvents().then(function(objects) {
-            $scope.myEvents = objects;
-            console.log('My Events: ', objects);
-        })
-        .finally( function() {
-            $ionicLoading.hide();
-        });
+    if( $rootScope.isOffline ) {
+        loadLocalEvents();
     }
     else {
         $scope.doRefresh();
@@ -77,6 +76,17 @@ console.log('<---------- Refresh events ----------->');
         $scope.newEvents = objects;
         console.log('New Events: ', objects);
     });
+
+    function loadLocalEvents() {
+        console.log('Loading Local Events');
+        Event.loadMyEvents().then(function(objects) {
+            $scope.myEvents = objects;
+            console.log('My Events: ', objects);
+        })
+        .finally( function() {
+            $ionicLoading.hide();
+        });
+    }
 
     $scope.showEvent = function(myEvent) {
         Event.showEvent = myEvent;
@@ -94,6 +104,8 @@ console.log('<---------- Refresh events ----------->');
           duration: 1500,
           noBackdrop: true
         });
+
+        Theme.incrementUsage(newEvent.theme);
 
         $scope.newEvents.splice(index, 1);
         $scope.myEvents.push(newEvent);
@@ -170,6 +182,7 @@ console.log('<---------- Refresh events ----------->');
             'userlocation',
             'Weather',
             'Chat',
+            'Theme',
             'ErrorHandler',
             function(
                 $rootScope,
@@ -189,6 +202,7 @@ console.log('<---------- Refresh events ----------->');
                 userlocation,
                 Weather,
                 Chat,
+                theme,
                 ErrorHandler
             )
     {
@@ -236,13 +250,17 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
         $scope.showEvent = Event.showEvent;
         console.log('$scope.showEvent: ', $scope.showEvent);
-
-        if( $scope.showEvent.place_image_url == null || $scope.showEvent.place_image_url == undefined ) {
-            $scope.background_image_url = 'img/themeIcon/'+$scope.showEvent.theme+'.png';
+console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url);
+        if($scope.showEvent.background_url) {
+            $scope.background_image_url = $scope.showEvent.background_url;
         }
-        else {
+        else if($scope.showEvent.place_image_url) {
             $scope.background_image_url = $scope.showEvent.place_image_url;
         }
+        else {
+            $scope.background_image_url = 'img/themeIcon/'+$scope.showEvent.theme+'.png';
+        }
+console.log('$scope.background_image_url: ', $scope.background_image_url);
 
         $scope.weather = {};
         if( !$rootScope.isOffline ) {
@@ -391,6 +409,8 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
           duration: 1500,
           noBackdrop: true
         });
+
+        Theme.incrementUsage($scope.showEvent.theme);
 
         Participant.updateByEvent($scope.showEvent, Parse.User.current(), true);
         $scope.isShowJoinButton = false;
@@ -796,6 +816,7 @@ console.log('Release');
             '$stateParams',
             '$ionicLoading',
             '$filter',
+            '$timeout',
             'Event', 
             'Participant',
             'Theme',
@@ -807,6 +828,7 @@ console.log('Release');
                 $stateParams,
                 $ionicLoading, 
                 $filter,
+                $timeout,
                 Event, 
                 Participant,
                 Theme,
@@ -825,16 +847,14 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Event.myEvent = $scope.editEvent;
     }
     else {
-        if(!Event.myEvent) {
-            Event.myEvent = {id: $stateParams.objectId};
-        }
-        $scope.editEvent = Event.myEvent;
+        $scope.editEvent = !Event.myEvent ? {id: $stateParams.objectId} : Event.myEvent;
     }
 
     $scope.back = function() {
         
         Event.resetMyEvent();
         if( $scope.isNew ) {
+            Event.resetMyEvent();
             $state.go('events');
         }
         else {
@@ -866,33 +886,36 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
             $scope.editEvent.name = $filter('translate')(theme.name);
         }
 
-        $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
-
         Event.myEvent = $scope.editEvent;
         
         Event.myEvent.theme = theme.name;
-        //Event.myEvent.place_image_url = 'img/themeIcon/'+theme.name+'.png';
 
-        Event.save($scope.isNew).then(function(savedEvent) {
-
-            Event.myEvent.id = savedEvent.id;
-            Event.myEvent._id = savedEvent.id;
-            Event.myEvent.updatedAt = savedEvent.updatedAt;
-            if($scope.isNew) {
-                Participant.store(Event.myEvent, Parse.User.current(), true);
-            }
-            
-            if( !$scope.isNew ) {
-                $state.go('showEvent', {objectId: savedEvent.id});
-            }
-            else {
-                $state.go('editEventDate', {isNew: true, objectId: savedEvent.id}, {reload: true});
-            }
-        })
-        .finally( function() {
-            $ionicLoading.hide();
+        $timeout(function() {
+            Theme.incrementUsage(theme.name);
         });
+        
+        if(!$scope.isNew) {
+            $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
+            Theme.getUrl(theme.name).then(function(url){
+                Event.myEvent.background_url =  url;
+                console.log('Event.myEvent.background_url: ', Event.myEvent.background_url);
+
+                Event.save($scope.isNew).then(function(savedEvent) {
+                    $state.go('showEvent', {objectId: Event.myEvent.id});
+                });
+            })
+            .finally( function() {
+                $ionicLoading.hide();
+            });
+        }
+        else {
+            Theme.getUrl(theme.name).then(function(url){
+                Event.myEvent.background_url =  url;
+                console.log('Event.myEvent.background_url: ', Event.myEvent.background_url);
+            });
+            $state.go('editEventDate', {isNew: true, objectId: Event.myEvent.id}, {reload: true});
+        }
     }
 
     //  Other functions
@@ -951,19 +974,19 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 console.log('');
 console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
 
+    if( $stateParams.objectId == '' && !Event.myEvent) {
+        $state.go('events');
+        return;
+    }
+
     $scope.isNew = $stateParams.isNew ? true : false;
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-    if( $stateParams.objectId == '' ) {
-        $scope.editEvent = {};
-        Event.myEvent = {};
-    }
-    else {
-        if(!Event.myEvent) {
-            Event.myEvent = {id: $stateParams.objectId};
-        }
-        $scope.editEvent = Event.myEvent;
+    $scope.editEvent = Event.myEvent == undefined ? {} : Event.myEvent;
+    if( $stateParams.objectId !== '' && Event.myEvent ) {
+        if( Event.myEvent.id == undefined )
+            $scope.editEvent.id = $stateParams.objectId; 
     }
 
     $scope.back = function() {
@@ -976,8 +999,6 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
     }
 
 
-//  Edit Event Participants
-
     $scope.loadFriends = function() {
         console.log('chegou ao loadFriends');
 
@@ -988,24 +1009,36 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
 
             $scope.friends = friends;
 
-            Participant.getAll($scope.editEvent, false).then(function(invitedFriends){
-                $scope.invitedFriends = invitedFriends;
-console.log('$scope.invitedFriends: ', $scope.invitedFriends);
+            if( $scope.editEvent.id ) {
+                Participant.getAll($scope.editEvent, false).then(function(invitedFriends){
+                    $scope.invitedFriends = invitedFriends;
+                    console.log('$scope.invitedFriends: ', $scope.invitedFriends);
 
-                //Remove participants from friends
-                for (var i = 0; i < invitedFriends.length; i++) {
-                    for (var j = 0; j < $scope.friends.length; j++) {
+                    //Remove participants from friends
+                    for (var i = 0; i < invitedFriends.length; i++) {
+                        for (var j = 0; j < $scope.friends.length; j++) {
 
-                        if(invitedFriends[i].id == $scope.friends[j].id ) {
-                            $scope.friends.splice(j, 1);
-                            break;
+                            if(invitedFriends[i].id == $scope.friends[j].id ) {
+                                $scope.friends.splice(j, 1);
+                                break;
+                            }
                         }
                     }
+                })
+                .catch(function(fallback) {
+                    console.log('Error: ', fallback + '!!');
+                });
+            }
+            else {
+                $scope.invitedFriends[0] = {
+                    id: Parse.User.current().id,
+                    facebookId: Parse.User.current().get('facebookId'),
+                    first_name: Parse.User.current().get('first_name'),
+                    last_name: Parse.User.current().get('last_name'),
+                    isGoing: true,
+                    isHidden: false
                 }
-            })
-            .catch(function(fallback) {
-                console.log('Error: ', fallback + '!!');
-            });
+            }
             
         })
         .catch(function(fallback) {
@@ -1016,6 +1049,11 @@ console.log('$scope.invitedFriends: ', $scope.invitedFriends);
         });
     }
 
+    function loadParticipants() {
+
+    }
+
+//  Edit Event Participants
     $scope.inviteFriend = function(index, friend) {
         friend.isNew = 1;
         $scope.friends.splice(index, 1);
@@ -1030,7 +1068,56 @@ console.log('$scope.invitedFriends: ', $scope.invitedFriends);
         }
     }
 
-    $scope.notifyParticipants = function() {
+    $scope.saveEvent = function() {
+
+console.log('$scope.editEvent: ', $scope.editEvent);
+console.log('Event.myEvent: ', Event.myEvent);
+
+        Event.myEvent = $scope.editEvent;
+        $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
+        Event.save($scope.isNew).then(function(savedEvent) {
+            Event.myEvent.id = savedEvent.id;
+            Event.myEvent._id = savedEvent.id;
+            Participant.store(Event.myEvent, Parse.User.current(), true);
+            
+            notifyParticipants();
+
+
+            Event.showEvent = Event.myEvent;
+            Event.showEvent.participants = [];
+            for (var i=0; i<$scope.invitedFriends.length; i++) {
+                if($scope.invitedFriends[i].isGoing)
+                    Event.showEvent.participants.push($scope.invitedFriends[i]);
+            };
+            Event.updateEventLocally(Event.showEvent).then(function() {
+                console.log('Event updated!');
+                Event.resetMyEvent();
+            });
+            
+            $ionicLoading.hide();
+
+            var delay = 0;
+            if($scope.isNew) {
+                $ionicLoading.show({
+                  templateUrl : 'views/templateSuccessFeedback.html',
+                  duration: 1500,
+                  noBackdrop: true
+                });
+            }
+
+        })
+        .catch(function(error){
+            ErrorHandler.error('EventEditParticipantsController', 'saveEvent()',error.message);
+            $ionicLoading.hide();
+        })
+        .finally( function() {
+            $timeout(function() {
+                $state.go('showEvent', {objectId: Event.showEvent.id});
+            }, 1500);
+        });
+    }
+
+    function notifyParticipants() {
         console.log('Notify Participants');
 
         var notify_tokens = [];
@@ -1067,34 +1154,7 @@ console.log('$scope.invitedFriends: ', $scope.invitedFriends);
             push_message = Event.myEvent.name + $filter('translate')('event_push_uninvite');
             PushService.send(notify_tokens, push_message);
         }
-        Event.showEvent = Event.myEvent;
-        Event.showEvent.participants = [];
-        for (var i=0; i<$scope.invitedFriends.length; i++) {
-            if($scope.invitedFriends[i].isGoing)
-                Event.showEvent.participants.push($scope.invitedFriends[i]);
-        };
-        Event.updateEventLocally(Event.showEvent).then(function() {
-            console.log('Event updated!');
-            Event.resetMyEvent();
-        });
-        
-        console.log('ShowEvent before show:', Event.showEvent);
-
-        var delay = 0;
-        if($scope.isNew) {
-            delay = 1500;
-            $ionicLoading.show({
-              templateUrl : 'views/templateSuccessFeedback.html',
-              duration: delay,
-              noBackdrop: true
-            });
-        }
-
-        $timeout(function() {
-            $state.go('showEvent', {objectId: Event.showEvent.id});
-        }, delay);
     }
-
 
 }])
 
@@ -1133,19 +1193,22 @@ console.log('$scope.invitedFriends: ', $scope.invitedFriends);
 console.log('');
 console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 
+    if( $stateParams.objectId == '' && !Event.myEvent) {
+        $state.go('events');
+        return;
+    }
+
     $scope.isNew = $stateParams.isNew ? true : false;
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-    if( $stateParams.objectId == '' ) {
-        $scope.editEvent = {};
-        Event.myEvent = {};
+    $scope.editEvent = Event.myEvent == undefined ? {} : Event.myEvent;
+    if( $stateParams.objectId !== '' && Event.myEvent ) {
+        if( Event.myEvent.id == undefined )
+            $scope.editEvent.id = $stateParams.objectId; 
     }
-    else {
-        if(!Event.myEvent) {
-            Event.myEvent = {id: $stateParams.objectId};
-        }
-        $scope.editEvent = Event.myEvent;
+    else if( $stateParams.objectId == '' ) {
+        $state.go('events');
     }
 
     var currentLocation = {};
@@ -1418,21 +1481,24 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
         {
 console.log('');
 console.log('<<<<<<-----------   Edit Date Screen  ---------->>>>>');
+    
+    if( $stateParams.objectId == '' && !Event.myEvent) {
+        $state.go('events');
+        return;
+    }
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     $scope.scrollItemHeight = 35;
 
-    if( $stateParams.objectId == '' ) {
-        $scope.editEvent = {};
-        Event.myEvent = {};
+    $scope.editEvent = Event.myEvent == undefined ? {} : Event.myEvent;
+    if( Event.myEvent ) {
+        if( Event.myEvent.id == undefined )
+            $scope.editEvent.id = $stateParams.objectId; 
     }
-    else {
-        if(!Event.myEvent) {
-            Event.myEvent = {id: $stateParams.objectId};
-        }
-        $scope.editEvent = Event.myEvent;
-    }
+
+console.log('$scope.editEvent: ', $scope.editEvent);
+console.log('Event.myEvent: ', Event.myEvent);
 
     $scope.back = function() {
         if( $stateParams.isNew ) {
@@ -1535,14 +1601,19 @@ console.log('<<<<<<-----------   Edit Date Screen  ---------->>>>>');
                 0,
                 0
             );
-            Event.save();
         }
 
         if( $stateParams.isNew ) {
             $state.go('editEventFriends', {isNew: true, objectId: $scope.editEvent.id});
         }
         else {
-            $state.go('showEvent', {objectId: $scope.editEvent.id});
+            $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
+            Event.save().then(function(savedEvent) {
+                $state.go('showEvent', {objectId: Event.myEvent.id});
+            })
+            .finally( function() {
+                $ionicLoading.hide();
+            });
         }
     }
 
