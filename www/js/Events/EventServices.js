@@ -731,7 +731,7 @@ console.log('Event loaded locally: ', doc);
 
 		init: function() {
 console.log('<------ Theme Load ----------->');
-			themes = themes = $filter('orderBy')(staticThemes, '-totalUsage');
+			themes = $filter('orderBy')(staticThemes, '-totalUsage');
 
 			_db.bulkDocs(staticThemes).then(function (result) {
 				console.log('Themes: staticThemes stores successfully', result);

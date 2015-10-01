@@ -45,7 +45,6 @@ angular.module('letsy',
       ErrorHandler) {
 
   $ionicPlatform.ready(function() {
-try {
 
     $rootScope.isOffline = false;
     $rootScope.isIOS = ionic.Platform.isIOS();
@@ -53,7 +52,7 @@ try {
     Language.set();
 
     if(window.cordova) {
-        alert('Entrou no ionicPlatform.ready!');
+        //alert('Entrou no ionicPlatform.ready!');
 
       if(cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -72,11 +71,6 @@ try {
     loadMapsApi();
 
     PushService.init();
-}
-catch(err) {
-    alert('ionicPlatform.ready Error: '+err);
-    ErrorHandler.error('ionicPlatform', 'ready()', err);
-}
   })
 
   function loadMapsApi () {
@@ -241,4 +235,8 @@ catch(err) {
 
   // Send to events if the URL was not found
   $urlRouterProvider.otherwise('/events');
-}); 
+})
+.constant('global_variables',{
+  app_version: 0.01,
+  debug: true
+});

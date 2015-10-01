@@ -82,7 +82,10 @@
         </ion-item>
     </ion-list>
 
-    <div ng-show="myEvents.length == 0 && newEvents.length == 0" class="emptyMsg" translate="event_newEvents_noEvents"></div>
+    <div ng-show="myEvents.length == 0 && newEvents.length == 0" class="emptyMsg" ui-sref="editEventName({isNew: true, reload: true})">
+        <i class="ion-ios-calendar-outline"></i>
+        <span translate="event_newEvents_noEvents"></span>
+    </div>
 </ion-content>
 
 </ion-pane>

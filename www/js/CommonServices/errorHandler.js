@@ -1,7 +1,7 @@
 angular.module('common.ErrorHandlerServices',[])
 
 
-.factory('ErrorHandler',['$q', '$rootScope', 'config', function( $q, $rootScope, config){
+.factory('ErrorHandler',['$q', '$rootScope', 'global_variables', function( $q, $rootScope, global_variables){
 
     var Error = Parse.Object.extend("Log");
 
@@ -39,7 +39,7 @@ angular.module('common.ErrorHandlerServices',[])
     },
 
     debug: function(method, scope, message) {
-        if(config.debug) save('DEBUG', method, scope, message);
+        if(global_variables.debug) save('DEBUG', method, scope, message);
     }
 
    }
@@ -65,7 +65,7 @@ angular.module('common.ErrorHandlerServices',[])
   }
 
   // catch exceptions inside angular
-  $provide.decorator('$exceptionHandler', ['$delegate','config', function($delegate, config){
+  $provide.decorator('$exceptionHandler', ['$delegate','global_variables', function($delegate, global_variables){
       return function(exception, cause){
 console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> exceptions inside angular');
 
@@ -76,7 +76,7 @@ console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> exceptions inside angular');
           if(exception.name) {    data.name  = exception.name;  }
         }
 
-        if(config.debug){
+        if(global_variables.debug){
           $delegate(exception, cause);
           console.log('exception', data);
           if(window.cordova) window.alert('Error: '+data.message);
@@ -101,16 +101,11 @@ console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> exceptions outside angular');
       }
 
       console.log('exception', data);
-      if(!window.cordova) {
+      if(window.cordova) {
         //window.alert('Error: '+data.message);
-        uploadError('JAVASCRIPT EXCEPTION', window.location.hash, data.name, data);
       }
+      uploadError('JAVASCRIPT EXCEPTION', window.location.hash, data.name, data);
 
       return stopPropagation;
     };
-})
-
-.constant('config', {
-    debug: true,
-    version: '1.0.0'
 });

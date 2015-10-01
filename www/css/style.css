@@ -151,10 +151,23 @@ h1.title img {
 }
 
 .emptyMsg {
-	color: #aaa;
-	padding: 30px 16px;
-	font-size: 12px;
-	font-style: italic;
+	color: #444;
+	font-weight: bold;
+	margin-top: 50px;
+	font-size: 20px;
+	text-align: center;
+	width: 100%;
+	position: relative;
+	padding: 145px 70px 50px;
+}
+.emptyMsg > i {
+	position: absolute;
+	color: #ddd;
+	font-size: 300px;
+	display: block;
+	width: 100%;
+	left: -3px;
+	top: 0px;
 }
 
 .rightIcon {

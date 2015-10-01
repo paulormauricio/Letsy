@@ -18,7 +18,7 @@
         <span translate="event_theme_choose">Choose your theme</span>
         <i class="ion-android-arrow-dropdown"></i>
     </div>
-    <ion-scroll class="collectionList">
+    <ion-scroll class="collectionList showDown" ng-class="{'loaded': showThemes}">
         <ion-item ng-click="storeName(theme)" class="cover opacity" 
                   ng-repeat="theme in themes"
                   ng-show="([theme]|themeSearch:editEvent.name).length && ($index < 8 || editEvent.name.length > 2)"

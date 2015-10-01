@@ -851,7 +851,6 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
     }
 
     $scope.back = function() {
-        
         Event.resetMyEvent();
         if( $scope.isNew ) {
             Event.resetMyEvent();
@@ -866,7 +865,10 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
     $scope.loadThemes = function() {
 
         Theme.getAll().then(function(themes){
-            $scope.themes = themes;
+            $timeout(function() {
+                $scope.themes = themes;
+                $scope.showThemes = true;
+            });
             console.log('Themes: ', themes);
         })
         .finally( function() {
