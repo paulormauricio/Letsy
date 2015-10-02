@@ -56,7 +56,7 @@ angular.module('letsy.WeatherServices',[])
             ErrorHandler.warning('WeatherServices', 'Weather.get() -> handleSuccess()','Response.data.data.weather is undefined!');
             return {};
         }
-    	var index = Math.round(time * 3 / 8) - 1;
+    	var index = Math.round(time * 3 / 10);
     	var data = response.data.data.weather[0].hourly[index];
     	var result = {
     		code: data.weatherCode,

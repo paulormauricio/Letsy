@@ -714,7 +714,7 @@ console.log('saveEvent before store Participant:', saveEvent);
 					console.log('Participant removed :', participantId);
 				},
 				error: function(myObject, error) {
-			    	ErrorHandler.error('EventServices', 'Participant.delete()',error.message);
+			    	ErrorHandler.error('EventServices', 'Participant.delete()',error);
 				}
 			});
 
@@ -727,39 +727,39 @@ console.log('saveEvent before store Participant:', saveEvent);
 
 	var _db = new PouchDB('themes', {adapter: 'websql'});
 
-	var themes = [];
+	var _themes = [];
 
 	return {
 
 		init: function() {
 console.log('<------ Theme Load ----------->');
-			themes = $filter('orderBy')(staticThemes, '-totalUsage');
+			_themes = $filter('orderBy')(staticThemes, '-totalUsage');
 
-			_db.bulkDocs(themes).then(function (result) {
-				console.log('Themes: staticThemes stores successfully', result);
+			_db.bulkDocs(_themes).then(function (result) {
+				console.log('Themes: staticThemes stores successfully');
 			}).catch(function (error) {
-				ErrorHandler.error('EventServices', 'Theme.init()',error);
+				ErrorHandler.error('EventServices', 'Theme.init()',error.message);
 			});
 
 		},
 
 		getAll: function() {
 			var deferred = $q.defer();
-			console.log('themes: ', themes);
+			console.log('themes: ', _themes);
 
-			if(themes.length===0) {
+			if(_themes.length===0) {
 
 				return $q.when(_db.allDocs({ include_docs: true}).then(function (docs) {
-			        themes = docs.rows.map(function(doc) {
+			        _themes = docs.rows.map(function(doc) {
 			            return doc.doc;
 			        });
-			        return $filter('orderBy')(themes, '-totalUsage');
+			        return $filter('orderBy')(_themes, '-totalUsage');
 				}).catch(function (error) {
 					ErrorHandler.error('EventServices', 'Theme.db.allDocs()',error.message);
 				}));	
 			}
 			else {
-				return $timeout(function() {return themes;});				
+				return $timeout(function() {return _themes;});				
 			}
 
 		},

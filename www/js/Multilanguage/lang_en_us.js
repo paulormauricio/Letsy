@@ -56,6 +56,8 @@ angular.module('letsy.lang_en_us', [])
 	event_accept: 'Go',
 	event_close: 'Close',
 	event_close_confirm: 'Are you sure you want to close ',
+	event_delete: 'Delete',
+	event_delete_confirm: 'Are you sure you want to delete ',
 	event_going: 'Going',
 	event_goingFriends_prev: 'You + ',
 	event_invite: "Done",

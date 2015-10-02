@@ -189,6 +189,7 @@ console.log('<---------- Refresh events ----------->');
             'Weather',
             'Chat',
             'Theme',
+            'PushService',
             'ErrorHandler',
             function(
                 $rootScope,
@@ -209,6 +210,7 @@ console.log('<---------- Refresh events ----------->');
                 Weather,
                 Chat,
                 theme,
+                PushService,
                 ErrorHandler
             )
     {
@@ -489,7 +491,7 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
 
             $ionicPopup.confirm({
                 title: $filter('translate')('event_delete'),
-                template: $filter('translate')('event_delete_confirm')+$scope.newEvents[index].name+'?',
+                template: $filter('translate')('event_delete_confirm')+$scope.showEvent.name+'?',
                 okText: $filter('translate')('event_delete'),
                 okType: 'button-assertive',
                 cancelText: $filter('translate')('cancel'),
@@ -507,8 +509,6 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
                         var notify_tokens = [];
                         var push_message = '';
                         var payload = {
-                            '$state': 'showEvent',
-                            'deleteEvent': '{\'objectId\': '+$stateParams.objectId+'}',
                         };
                         for (var i = 0; i < $scope.showEvent.participants.length; i++) {
                             notify_tokens.push($scope.showEvent.participants[i].device_token);
