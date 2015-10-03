@@ -204,29 +204,10 @@ console.log('----->  Database change: ', change);
 								}
 							}, participants);
 
-							result.participants = angular.toJson(participants, false);
+							result.participants = participants;
 							
 							//Add to local database
-							$q.when(_db.get(result._id)
-								.then(function(doc) {
-									doc.updatedAt = new Date(doc.updatedAt);
-									if( result.updatedAt > doc.updatedAt  ) {
-										result._rev = doc._rev;
-										return _db.put( result );
-									}
-								})
-								//.then(function(res){ console.log('Imported Event: ', res);})
-								.catch(function (err) { 
-									if( err.name === 'not_found' ) {
-										_db.put(result).then(function(res){console.log('Put new event: ', res);}).catch(function(err){console.log('Import/Put new Event: ', err);})
-									}
-									else {
-										console.log('Import Event Error: ', err); 
-									}
-								})
-							);
-							result.participants = participants;
-							onDatabaseChange({doc: result, deleted: false, id: result._id});
+							updateLocalDB(result);
 
 						},
 						error: function(error) {
@@ -300,7 +281,7 @@ console.log('----->  Database change: ', change);
 		  	},results);
 
 		  	_newEvents = results;
-		    $rootScope.$apply(function() { deferred.resolve(results); });
+		    $rootScope.$apply(function() { deferred.resolve(_newEvents); });
 
 		  },
 		  error: function(error) {
@@ -374,19 +355,8 @@ console.log('Event loaded locally: ', doc);
 
 				this.showEvent = result;
 
-				_db.get(object.id)
-				.then(function (doc) {
-					onDatabaseChange({doc: result, deleted: false, id: result._id});
-				})
-				.catch(function(error) {
-					if( error.name === 'not_found') {
-						console.log('Document not found in local DB');
-					}
-					else {
-						console.log('Get Doc error: ', error);
-						ErrorHandler.error('EventServices', 'Event.get() -> _db.get()',error.message);
-					}
-				});
+				//Add to local database
+				updateLocalDB(result);
 
 			}
 			
@@ -442,26 +412,29 @@ console.log('Event loaded locally: ', doc);
 				myEvent_temp._id = newEvent.id;
 				myEvent_temp.updatedAt = newEvent.updatedAt;				
 console.log('saved newEvent: ', newEvent);
+
 				//Add to local database
-				$q.when(_db.get(myEvent_temp._id)
-					.then(function(doc) {
-						myEvent_temp._rev = doc._rev;
-						return _db.put( myEvent_temp );
-					})
-					//.then(function(res){ console.log('Imported Event: ', res);})
-					.catch(function (err) { 
-						if( err.name === 'not_found' ) {
-							_db.put(myEvent_temp).then(function(res){console.log('Put new event: ', res);}).catch(function(err){console.log('Import/Put new Event Error: ', err);})
-						}
-						else {
-							console.log('Import Event Error: ', err); 
-						}
-					})
-				);
+				updateLocalDB(myEvent_temp);
+				$rootScope.$apply(function() { deferred.resolve(newEvent); });
+				return;
+
+				// $q.when(_db.get(myEvent_temp._id)
+				// 	.then(function(doc) {
+				// 		myEvent_temp._rev = doc._rev;
+				// 		return _db.put( myEvent_temp );
+				// 	})
+				// 	//.then(function(res){ console.log('Imported Event: ', res);})
+				// 	.catch(function (err) { 
+				// 		if( err.name === 'not_found' ) {
+				// 			_db.put(myEvent_temp).then(function(res){console.log('Put new event: ', res);}).catch(function(err){console.log('Import/Put new Event Error: ', err);})
+				// 		}
+				// 		else {
+				// 			console.log('Import Event Error: ', err); 
+				// 		}
+				// 	})
+				// );
 				
-				onDatabaseChange({doc: myEvent_temp, deleted: false, id: myEvent_temp._id});
-console.log('saved newEvent2: ', newEvent);
-			  	$rootScope.$apply(function() { deferred.resolve(newEvent); });
+				// onDatabaseChange({doc: myEvent_temp, deleted: false, id: myEvent_temp._id});			  	
 
 			  },
 			  error: function(gameScore, error) {
@@ -479,6 +452,10 @@ console.log('saved newEvent2: ', newEvent);
 	}
 
 	this.updateEventLocally = function(myEvent) {
+		return updateLocalDB(myEvent);
+	}
+
+	function updateLocalDB(myEvent) {
 		console.log('updateEventLocally: ', myEvent);
 		myEvent._id = myEvent.id;
 		return $q.when(_db.get(myEvent.id)
@@ -729,6 +706,13 @@ console.log('saveEvent before store Participant:', saveEvent);
 
 	var _themes = [];
 
+
+	function myDeltaFunction(doc) {
+		doc.counter = doc.counter || 0;
+		doc.counter++;
+		return doc;
+	}
+
 	return {
 
 		init: function() {
@@ -747,13 +731,14 @@ console.log('<------ Theme Load ----------->');
 			var deferred = $q.defer();
 			console.log('themes: ', _themes);
 
-			if(_themes.length===0) {
+			if(!_themes || _themes.length===0) {
 
 				return $q.when(_db.allDocs({ include_docs: true}).then(function (docs) {
-			        _themes = docs.rows.map(function(doc) {
+			        var themes = docs.rows.map(function(doc) {
 			            return doc.doc;
 			        });
-			        return $filter('orderBy')(_themes, '-totalUsage');
+			        _themes = $filter('orderBy')(themes, '-totalUsage');
+			        return _themes;
 				}).catch(function (error) {
 					ErrorHandler.error('EventServices', 'Theme.db.allDocs()',error.message);
 				}));	
@@ -781,18 +766,17 @@ console.log('<------ Theme Load ----------->');
 		},
 
 		incrementUsage: function(theme) {
-			for (var i = 0; i < themes.length; i++) {
-				if( themes[i].name === theme ) {
-					themes[i].totalUsage++;
+			for (var i = 0; i < _themes.length; i++) {
+				if( _themes[i].name === theme ) {
+					_themes[i].totalUsage++;
 					break;
 				}
 			}
 			$q.when(_db.get(theme)
 			.then(function (doc) {
-				themes = $filter('orderBy')(themes, '-totalUsage');
-				theme = doc;
-				theme.totalUsage++;
-				_db.put(theme).then(function(res){console.log(theme.name+' incrementUsage: ', theme.totalUsage);}).catch(function(error){ErrorHandler.error('EventServices', 'Theme.incrementUsage()',error.message);})
+				_themes = $filter('orderBy')(_themes, '-totalUsage');
+				doc.totalUsage++;
+				_db.put(doc).then(function(res){console.log(doc.name+' incrementUsage: ', doc.totalUsage);}).catch(function(error){ErrorHandler.error('EventServices', 'Theme.incrementUsage()',error);})
 			})
 			.catch(function(error){
 				ErrorHandler.error('EventServices', 'Theme.incrementUsage()',error.message);

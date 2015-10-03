@@ -3,6 +3,7 @@
 body {
 	cursor: url('http://ionicframework.com/img/finger.png'), auto;
 	background-color: #000;
+	font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
 }
 
 body > * {
@@ -27,7 +28,7 @@ body > * {
 	color: white;
 }
 .themeBackgroundColorLight {
-	background-color: rgb(197, 226, 247) !important;
+	background-color: rgb(220, 234, 240) !important;
 	border: 0px !important;
 	color: rgb(18, 86, 136) !important;
 }
@@ -271,6 +272,7 @@ h1.title img {
 #whereTitle {
 	right: 0px !important;
 	z-index: 4000;
+	margin-right: 0px !important;
 }
 h1.title .top {
 	position: absolute;
@@ -302,7 +304,7 @@ h1.title .top {
 }
 
 .item.noPadding {
-	padding: 5px;
+	padding: 5px 0px;
 	min-height: 90px;
 }
 
@@ -407,6 +409,7 @@ a {
 	text-align: center;
 	position: relative;
 	font-size: 9px;
+	height: 80px;
 }
 .buttons .col:first-child {
 	border-left: 0px;
@@ -425,11 +428,16 @@ a {
 }
 .buttons .col .title, .buttons td .subtitle  {
 	display: block;
-	font-size: 9px;
+	font-size: 10px;
 	text-align: center;
+	white-space: normal;
+	line-height: 1.0;
+	position: absolute;
+	width: 100%;
+	margin-top: 5px
 }
 .buttons .col .subtitle {
-	font-size: 9px;
+	font-size: 10px;
 	position: absolute;
 	width: 100%;
 	left: 0px;
@@ -937,13 +945,48 @@ i.edit {
 	padding: 0px;
 }
 
+#editEvent {
+	font-size: 12px;
+}
+
+#editEvent .item-icon-left {
+	padding-left: 65px;
+  	font-size: 15px;
+}
+.item-icon-right i:last-child {
+	right: 5px;
+}
+
+#editEvent .bottom {
+	padding: 30px 0px 15px 15px;
+	font-size: 25px;
+	background: rgba(0, 0, 0, 0.4); /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .8) 95%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0, 0, 0, 0)), color-stop(95%,rgba(0, 0, 0, .8))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .7) 95%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+
 #showEvent {
 	position: fixed !important;
-	top: 0px;
 	left: 0px;
 	right: 0px;
 	z-index: 5000;
 	overflow: hidden;
+	top: -100%;
+	margin-bottom: -58px;
+}
+
+#showEvent.show {
+	top: 0px !important;
+	bottom: auto;
+}
+
+#showEvent.hide {
+	margin-top: 19px !important;
 }
 
 #showEvent, #chats {
@@ -963,7 +1006,7 @@ i.edit {
 }
 
 
-#showEvent button.action {
+button.action {
 	position: absolute;
 	top: 16%;
 	border-radius: 50%;
@@ -971,11 +1014,11 @@ i.edit {
 	background-color: transparent;
 }
 
-#showEvent button.action > i {
+button.action > i {
 	color: white;
 	border: 1px solid rgba(255, 255, 255, .5);
 	border-radius: 50%;
-	background-color: transparent;
+	background-color: rgba(0, 0, 0, .6);
 	height: 50px;
 	width: 50px;
 	font-size: 30px;
@@ -1045,8 +1088,8 @@ i.edit {
 	left: 0px;
 	right: 0px;
 	white-space: normal;
-	font-weight: bold !important;
-	font-style: italic;
+	/*font-weight: bold !important;*/
+	/*font-style: italic;*/
 }
 .topHalf.lower {
 	margin-bottom: -5%;
@@ -1159,9 +1202,9 @@ i.edit {
 .item.label {
 	padding: 0px;
 	text-align: center;
-	font-size: 9px;
+	font-size: 12px;
 	color: white;
-	line-height: 1.5;
+	line-height: 1.0;
 	border-bottom: 2px solid white !important;
 }
 

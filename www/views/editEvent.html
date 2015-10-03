@@ -1,0 +1,68 @@
+<ion-pane class="">
+
+<ion-header-bar class="bar-positive themeBackgroundColor">
+    <button class="button button-clear left" ng-click="back()" ng-hide="isEdit">
+        <i class="icon ion-ios-arrow-back"></i>
+    </button>
+    <h1 class="title" translate="edit"></h1>
+</ion-header-bar>
+
+<ion-content id="editEvent">
+
+<ion-list>
+
+    <ion-item class="cover" style="position: relative; height: 200px;">
+
+        <div class="backgroundImage" ng-style="{'background-image': 'url(\''+background_image_url+'\')'}"></div>
+
+        <button class="action" style="right: 10%" ng-click="changePhoto()"><i class="icon ion-camera"></i></button>
+
+        <h1 ng-show="editEvent.name" ui-sref="editEventName({objectId:editEvent.id})" class="bottom item-icon-right">
+            {{::editEvent.name}}
+            <i class="icon ion-ios-arrow-forward smaller" style="margin-top: 12px;"></i>
+        </h1>   
+    </ion-item>
+
+    <ion-item class="item-icon-left item-icon-right" ng-click="placePressed()">
+        <i class="icon ion-location"></i>
+        <span ng-switch="!editEvent.place_name">
+            <span ng-switch-when="true" translate="event_place_empty"></span> 
+            <span ng-switch-when="false">{{::editEvent.place_name}}</span>
+        </span>
+        <i class="icon ion-ios-arrow-forward small"></i>
+    </ion-item>
+
+    <ion-item class="item-icon-left item-icon-right" ng-click="editDate()">
+        <span ng-switch="!editEvent.date">
+            <span ng-switch-when="true">
+                <i class="icon ion-ios-clock-outline"></i>
+                <span class="title" translate="event_date_not_defined"></span>
+            </span>
+            <span ng-switch-when="false">
+                <i class="icon ion-calendar"></i>
+                <span id="dayLabel" class="smaller" style="left: 30px; top: 20px">{{editEvent.date | date: 'd'}}</span>
+                <span class="title">
+                    {{ editEvent.date | prettyDateFormat }}
+                </span>
+            </span>
+        </span>
+        <i class="icon ion-ios-arrow-forward small"></i>
+    </ion-item>
+
+    <ion-item class="item-icon-left item-icon-right" ng-click="editParticipants()">
+        <i class="icon ion-person-stalker"></i>
+        {{::editEvent.totalParticipants}}
+        <span translate="event_invitedFriend{{editEvent.totalParticipants==1?'':'s'}}"></span>
+        <i class="icon ion-ios-arrow-forward small"></i>
+    </ion-item>
+
+    <ion-item ng-click="deleteEvent()" class="item-icon-left assertive">
+        <i class="icon ion-ios-trash"></i>
+        <span translate="event_delete"></span>
+    </ion-item>
+
+</ion-list>
+</ion-content>
+
+
+</ion-pane>

@@ -1,29 +1,21 @@
 <ion-pane class="themeBackgroundColorLight">
 
 <ion-header-bar class="bar-positive themeBackgroundColor" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" ng-class="{'transparent': isShowDetailPanel}">
-    <button class="button button-clear left" ng-click="back(); $event.stopPropagation();" ng-hide="isEdit">
+    <button class="button button-clear left" ng-click="back(); $event.stopPropagation();">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
     <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
-    <button ng-switch="isEdit" class="button button-clear right invisible" ng-class="{'visible':isShowEditButton && !isOffline && isShowDetailPanel}" ng-click="toggleEdit()">
-        <span ng-switch-when="false">
-            <i class="ion-edit"></i>
-        </span>
-        <span ng-switch-when="true">
-            <i class="icon ion-ios-checkmark-outline"></i>
-        </span>
+    <button class="button button-clear right invisible" ng-class="{'visible':isHost && !isOffline && isShowDetailPanel}" ng-click="edit()">
+        <i class="ion-edit"></i>
     </button>
 </ion-header-bar>
 
 
-<div id="showEvent" class="cover showUp" ng-class="{'loaded': isShowDetailPanel, 'slow': !isShowDetailPanel}" ng-style="{'margin-top': detailPanelScrollUp+'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
+<div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth - 19) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
 
     <div class="backgroundImage" ng-style="{'background-image': 'url('+background_image_url+')', 'height': 80 + item.firstRowHeight + item.colletionItemWidth + 2*imageResizeHeight+30+'px', 'top': '-'+(imageResizeHeight+30)+'px'}"></div>
 
     <ion-item ng-style="{'height': item.firstRowHeight + imageResizeHeight + 'px'}">
-
-        <button class="action invisible" style="left: 20%" ng-class="{'visible': isEdit && isOwner}" ng-click="deleteEvent()"><i class="icon ion-ios-trash-outline"></i></button>
-        <button class="hidden action invisible" style="right: 20%" ng-class="{'visible': isEdit}" ng-click="changePhoto()"><i class="icon ion-camera"></i></button>
 
         <button class="button-left button button-balanced invisible" ng-class="{'visible': !isOffline && isShowJoinButton}" ng-click="joinEvent()">
             <i class="icon ion-log-in"></i>
@@ -36,11 +28,8 @@
 
         <h1 ng-show="showEvent.name"
             ng-click="editName()"
-            class="topHalf centered" ng-class="{'showClick': isEdit, 'lower': !showEvent.place_name}">
+            class="topHalf centered" ng-class="{'lower': !showEvent.place_name}">
             {{::showEvent.name}}
-            <span ng-class="{'visible': isEdit}" class="editButton invisible">
-                <i class="icon ion-edit edit" style="padding-top: 5px; top: -8px;"></i>
-            </span>
         </h1>   
         <h2 ng-show="showEvent.place_name"
             class="bottomHalf centered">
@@ -52,31 +41,28 @@
     <!-- Event Date / Weather / Place  -->
     <ion-item class="noPadding borderTop">
         <div class="buttons row">
-            <div class="col" ng-click="editDate()" ng-class="{'showClick': isEdit, 'col-25': showEvent.date, 'col-33': !showEvent.date}">
+            <div class="col" ng-click="editDate()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
                 <div ng-switch="!showEvent.date">
                     <span ng-switch-when="true">
                         <i class="ion-ios-clock-outline"></i>
                         <span class="title" translate="event_date_not_defined"></span>
                     </span>
                     <span ng-switch-when="false">
-                        <i class="ion-calendar invisible" ng-class="{'visible': isEdit || showEvent.date}"></i>
+                        <i class="ion-calendar invisible" ng-class="{'visible': showEvent.date}"></i>
                         <span id="dayLabel">{{showEvent.date | date: 'd'}}</span>
                         <span class="title">
                         {{ showEvent.date | prettyDateFormat }}</span>
                     </span>
                 </div>
-                <span ng-class="{'visible': isEdit}" class="editButton invisible">
-                    <i class="icon ion-edit edit"></i>
-                </span>
             </div>
             <div class="col col-25" ng-show="showEvent.date && weather.desc">
-                <div ng-show="!isEdit">
+                <div>
                     <img ng-src="{{weather.icon_url}}" ng-alt="weather.desc">
                     <div class="title">{{weather.tempC}}ºC</div>
                     <span class="subtitle"><small>{{weather.desc}}</small></span>
                 </div>
             </div>
-            <div class="col" ng-click="placePressed()" ng-class="{'showClick': isEdit, 'col-25': showEvent.date && weather.desc, 'col-33': !showEvent.date && !weather.desc}">
+            <div class="col" ng-click="placePressed()" ng-class="{'col-25': showEvent.date && weather.desc, 'col-33': !showEvent.date && !weather.desc}">
                 <div ng-switch="!showEvent.place_name">
                     <span ng-switch-when="true">
                         <i class="ion-ios-location-outline"></i>
@@ -86,7 +72,7 @@
                         <span ng-switch="!showEvent.place_lat || !showEvent.place_lng">
                             <span ng-switch-when="true">
                                 <i class="ion-location"></i>
-                                {{::showEvent.place_name}}
+                                <span class="title">{{::showEvent.place_name}}</span>
                             </span>
                             <span ng-switch-when="false">
                                 <i class="ion-map"></i>
@@ -94,19 +80,11 @@
                             </span>
                         </span>
                     </span>
-
-                    <span ng-class="{'visible': isEdit}" class="editButton invisible">
-                        <i class="icon ion-edit edit"></i>
-                    </span>
-                    
                 </div>
             </div>
-            <div class="col showClick" ng-click="editParticipants()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
+            <div class="col showClick" ng-click="showParticipants()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
                 <i class="ion-person-stalker" ng-show="showEvent.totalParticipants"></i>
                 <div class="title larger">{{::showEvent.totalParticipants}}</div>
-                <span ng-class="{'visible': isEdit}" class="editButton invisible">
-                    <i class="icon ion-edit edit"></i>
-                </span>
             </div>
         </div>
     </ion-item>
@@ -127,10 +105,15 @@
         </ion-scroll>
     </ion-item>
 
-    <ion-item class="label borderTop themeBackgroundColor">
-        <i class="ion-android-arrow-dropup"></i>
-        <span translate="slideUp_hide"></span>
-        <i class="ion-android-arrow-dropup"></i>
+    <ion-item class="label borderTop themeBackgroundColor" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()">
+        <span ng-switch="isShowDetailPanel">
+            <span ng-switch-when="true">
+                <i class="ion-android-arrow-dropup"></i>
+            </span>
+            <span ng-switch-when="false">
+                <i class="ion-android-arrow-dropdown"></i>
+            </span>
+        </span>
     </ion-item>
 
 </div>

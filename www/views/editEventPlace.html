@@ -1,8 +1,8 @@
 <ion-header-bar class="bar-positive themeBackgroundColor">
-    <button class="button button-clear" ui-sref="showEvent({objectId: editEvent.id})">
+    <button class="button button-clear" ui-sref="editEvent({objectId: editEvent.id})">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <h1 class="title" id="whereTitle" style="padding-right: 10%;">
+    <h1 class="title" id="whereTitle" style="padding-right: 15%;">
     <span translate="event_where">Where?</span>
             <ion-autocomplete 
                 ng-model="query" 
@@ -24,7 +24,7 @@
 
     <ion-list>
         
-        <ion-item class="item-avatar item-square right-label" ng-repeat="place in suggestedPlaces" ng-click="callbackMethod({item: place})">
+        <ion-item class="item-avatar item-square right-label item-icon-right" ng-repeat="place in suggestedPlaces" ng-click="callbackMethod({item: place})">
             <img ng-src="{{ place.photos ? place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 100}) : 'img/icons/place.png' }}" class="">
             <h2 class="small {{place.vicinity == undefined ? 'middle' : ''}}">
                 {{place.name}}
@@ -33,7 +33,8 @@
                 <label class="smaller">{{place.vicinity}}</label>
             </p>
 
-            <span ng-hide="place.opening_hours == undefined" style="font-size: 10px" class="item-note {{place.opening_hours.open_now ? '' : 'assertive' }}" translate="{{place.opening_hours.open_now ? 'open_now' : 'closed_now'}}"></span>
+            <span ng-hide="true" style="font-size: 10px" class="item-note {{place.opening_hours.open_now ? '' : 'assertive' }}" translate="{{place.opening_hours.open_now ? 'open_now' : 'closed_now'}}"></span>
+            <i class="icon ion-information-circled larger calm"></i>
         </ion-item>
     </ion-list>
 

@@ -45,6 +45,7 @@ angular.module('letsy.lang_en_us', [])
 	date_week_sunday: 'Sunday',
 	date_week_sun: 'Sun',
 
+	edit: 'Edit',
 	friend: "Friend",
 	friends: "Friends",
 	going: 'Going',
@@ -107,9 +108,6 @@ angular.module('letsy.lang_en_us', [])
 	profile_title: 'My profile',
 	refresh: 'Refresh',
 	settings_title: 'Settings',
-
-	slideUp_hide: 'Hide',
-
 
 
 //  Generated via excel

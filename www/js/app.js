@@ -134,7 +134,7 @@ angular.module('letsy',
   $ionicAppProvider.identify({
     app_id: '8018ff6a',
     api_key: '1db15076a7bbfda81a4f728a1f904332e490096b9140fb4d',
-    dev_push: false
+    dev_push: true
   });
 }])
 
@@ -177,6 +177,15 @@ angular.module('letsy',
       url:'/event/editDate/:isNew/:objectId',
       controller:'EventEditDateController',
       templateUrl:'views/editEventDate.html',
+      cache: false,
+      data: {
+        authenticate: true
+      }
+    })
+    .state('editEvent',{
+      url:'/event/edit/:objectId',
+      controller:'EventEditController',
+      templateUrl:'views/editEvent.html',
       cache: false,
       data: {
         authenticate: true

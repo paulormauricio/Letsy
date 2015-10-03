@@ -221,14 +221,14 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     
     $timeout(function() {
         $scope.myFacebookId = Parse.User.current().get('facebookId');
-        $scope.isEdit = false;
         $scope.isShowJoinButton = false;
-        $scope.isShowEditButton = false;
+        $scope.isHost = false;
         $scope.isShowDetailPanel = true;
         $scope.detailPanelScrollUp = 0;
         $scope.imageResizeHeight = 0;
-        $scope.chatMarginTop = 0;
+        $scope.chatMarginTop = 10;
         $scope.chatMarginBottom = 0;
+        $scope.isPanelSlow = false;
     });
 
     if( !Event.showEvent.id ) {
@@ -271,28 +271,15 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
         else {
             $scope.background_image_url = 'img/themeIcon/'+$scope.showEvent.theme+'.png';
         }
-console.log('$scope.background_image_url: ', $scope.background_image_url);
+
 
         $scope.weather = {};
         if( !$rootScope.isOffline ) {
             //$scope.showEvent.participants = {};
             Participant.getAll(Event.showEvent).then(function(result) {
-                
-// result.push({id: 0, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 1, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 2, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 3, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 4, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 5, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 6, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 7, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 8, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-// result.push({id: 9, facebookId: "10152542092099862", first_name: 'Paulo', last_name: 'Mauricio'});
-
+         
                 $scope.showEvent.participants_all = $filter('orderBy')(result, '-isGoing +first_name +last_name' );
                 $scope.showEvent.totalParticipants = 0;
-                console.log('Participantes: ', $scope.showEvent.participants);
-
 
                 $scope.showEvent.participants = [];
 
@@ -312,14 +299,15 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
                         break;
                     }
                 };
+                console.log('Participantes: ', $scope.showEvent.participants_all);
                 $scope.isShowJoinButton = count == 0 ? true : false;
 
                 if($scope.showEvent.createdBy == Parse.User.current().id) {
-                    $scope.isShowEditButton = true;
+                    $scope.isHost = true;
                     $scope.isOwner = true;
                 }
                 else {
-                    $scope.isShowEditButton = false;
+                    $scope.isHost = false;
                     $scope.isOwner = false;
                 }
 
@@ -405,13 +393,16 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
         });
     }
 
-    $scope.toggleEdit = function() {
-        $scope.isEdit = !$scope.isEdit;
-    }
-
     $scope.back = function() {
         Chat.clearCache();
-        $state.go('events');
+        $state.go('events', {}, {reload: true});
+    }
+
+    $scope.edit = function() {
+        if($scope.isHost) {
+            Event.myEvent = $scope.showEvent;
+            $state.go('editEvent', {objectId: $scope.showEvent.id});
+        }
     }
 
     $scope.joinEvent = function() {
@@ -429,7 +420,6 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
 
         $timeout(function() {
             $scope.isShowJoinButton = false;
-            $scope.isShowEditButton = true;
 
             for (var i = 0; i<$scope.showEvent.participants_all.length; i++) {
                 if($scope.showEvent.participants_all[i].facebookId == Parse.User.current().get('facebookId')) {
@@ -486,48 +476,6 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
         });
     }
 
-    $scope.deleteEvent = function() {
-        if( $scope.isOwner ) {
-
-            $ionicPopup.confirm({
-                title: $filter('translate')('event_delete'),
-                template: $filter('translate')('event_delete_confirm')+$scope.showEvent.name+'?',
-                okText: $filter('translate')('event_delete'),
-                okType: 'button-assertive',
-                cancelText: $filter('translate')('cancel'),
-                cancelType: 'button-stable'
-            }).then(function(result) {
-                if(result) {
-
-                    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
-
-                    Event.myEvent = $scope.showEvent;
-                    Event.myEvent.isDeleted = true;
-                    Event.save().then(function(){
-                        console.log('Event deleted successfully!');
-
-                        var notify_tokens = [];
-                        var push_message = '';
-                        var payload = {
-                        };
-                        for (var i = 0; i < $scope.showEvent.participants.length; i++) {
-                            notify_tokens.push($scope.showEvent.participants[i].device_token);
-                        }
-                        if( notify_tokens.length > 0 ) {
-                            push_message = Event.myEvent.name+' '+$filter('translate')('event_push_canceled');
-                            PushService.send(notify_tokens, push_message, payload);
-                        }
-                        $state.go('events');
-                    }).catch(function(error){
-                        ErrorHandler.error('EventShowController', 'deleteEvent()', error.message);
-                    }).finally(function(){
-                        $ionicLoading.hide();
-                    });
-                }
-            });
-        }
-    }
-
 
 //  Edit Place  -------------------
     $scope.placePressed = function() {
@@ -542,74 +490,14 @@ console.log('$scope.background_image_url: ', $scope.background_image_url);
             Event.myEvent = $scope.showEvent;
             $state.go('editEventPlace', {objectId: $scope.showEvent.id});
         }
-        else {
 
-            // Show the action sheet
-            var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    { text: $filter('translate')('event_place_edit') }
-                ],
-                destructiveText: $filter('translate')('event_place_clear'),
-                // titleText: 'Modify your album',
-                cancelText: $filter('translate')('cancel'),
-                cancel: function() {
-                    // add cancel code..
-                },
-                buttonClicked: function(index) {
-                    console.log('Button clicked. Index = ', index);
-                    switch(index) {
-                        case 0: 
-                            Event.myEvent = $scope.showEvent;
-                            $state.go('editEventPlace', {objectId: $scope.showEvent.id});
-                            break;
-                        default: break;
-                    }
-                    hideSheet();
-                    return ;
-                },
-                destructiveButtonClicked: function() {
-                    console.log('chegou ao delete place');
-                    hideSheet();
-                    // Delete place
-
-                    Event.myEvent = $scope.showEvent;
-                    Event.deletePlace();
-
-                    $scope.showEvent = Event.myEvent;
-                    Event.resetMyEvent;
-                    
-                    $scope.showEvent.place_image_url = 'img/themeIcon/'+$scope.showEvent.theme+'.png';
-        
-                }
-            });
-
-            // For example's sake, hide the sheet after two seconds
-            $timeout(function() {
-                hideSheet();
-            }, 8000);
-        }
-
-        $scope.isEdit = false;
-    }
-//  Edit Name Section --------------------------
-
-    $scope.editName = function() {
-        if( $scope.isEdit ) {
-            Event.myEvent = $scope.showEvent;
-            $state.go('editEventName', {objectId: $scope.showEvent.id});
-        }
     }
 
 //  Edit Participants Section -------------------
 
-    $scope.editParticipants = function() {
-        if( $scope.isEdit ) {
-            Event.myEvent = $scope.showEvent;
-            $state.go('editEventFriends', {objectId: $scope.showEvent.id});
-        }
-        else {
-            $scope.isShowParticipants = !$scope.isShowParticipants;
-        }
+    $scope.showParticipants = function() {
+        console.log('chegou');
+        $scope.isShowParticipants = !$scope.isShowParticipants;
     }
 
     $scope.participantClick = function(index) {
@@ -652,7 +540,10 @@ console.log('Release');
         $timeout(function() {
             $scope.isShowDetailPanel = false;
             $scope.isEdit = false;
-            $scope.chatMarginTop = 0;
+            $scope.chatMarginTop = 10;
+            $scope.detailPanelScrollUp = 0;
+            $scope.isPanelSlow = true;
+            $scope.isShowParticipants = false;
         });
         
         $timeout(function() {
@@ -662,144 +553,27 @@ console.log('Release');
     }
 
     $scope.showDetailPanel = function() {
-        console.log('showDetailPanel');
-        $timeout(function() {
-            $scope.isShowDetailPanel = true;
-            $scope.detailPanelScrollUp = 0;
-            $scope.chatMarginTop = $scope.item.firstRowHeight + 50;
-        });
-
-        $timeout(function() {
-            $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
-        }, 100);
-
-    }
-
-
-//  Data Section --------------------------------
-    $scope.editDate = function() {
-
-        if( !$scope.isEdit || $scope.isShowJoinButton || $rootScope.isOffline) return;
-
-        $scope.showAngularDateEditor = true;
-
-        console.log(Event.showEvent);
-
-        if( window.cordova) {
-
-            var date = new Date();
-            if( $scope.showEvent.date ) date = $scope.showEvent.date;
-
-
-            var options = {
-                date: date,
-                mode: 'datetime',
-                minuteInterval: 5,
-                allowOldDates: false,
-                doneButtonColor: '#0000FF',
-                cancelButtonColor: '#000000',
-                cancelButtonLabel: $filter('translate')('done'),
-                clearButton: true,
-                clearButtonColor: "#ddd",
-                clearButtonLabel: $filter('translate')('event_date_clear')
-            };
-
-            datePicker.show(options, function(newDate){
-                switch (newDate) {
-                    case 'clear':
-                        newDate = '';
-                        break;
-                    case 'cancel':
-                        return;
-                    default:
-                        break;
-                }
-                saveDate(newDate);
-            });
-        }
-        else {
-            console.log('Not mobile');
-
-            // Show the action sheet
-            var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    { text: 'In 15 minutes' },
-                    { text: 'In 30 minutes' },
-                    { text: 'In 60 minutes' },
-                    { text: 'In 2 hours' }
-                ],
-                destructiveText: 'Clear event date',
-                // titleText: 'Modify your album',
-                cancelText: 'Cancel',
-                cancel: function() {
-                    // add cancel code..
-                },
-                buttonClicked: function(index) {
-                    console.log('Button clicked. Index = ', index);
-                    switch(index) {
-                        case 0: 
-                            date = addMinutes(Date(), 15);
-                            break;
-                        case 1: 
-                            date = addMinutes(Date(), 30);
-                            break;
-                        case 2: 
-                            date = addMinutes(Date(), 60);
-                            break;
-                        case 3: 
-                            date = addMinutes(Date(), 120);
-                            break;
-                        default: return;
-                    }
-                    hideSheet();
-                    saveDate(date);
-                },
-                destructiveButtonClicked: function() {
-                    console.log('chegou ao delete');
-                    hideSheet();
-                    saveDate('');
-                }
-            });
-
-            // For example's sake, hide the sheet after two seconds
+        if( !$scope.isShowDetailPanel ) {
+            console.log('showDetailPanel');
             $timeout(function() {
-                hideSheet();
-            }, 8000);
+                $scope.isShowDetailPanel = true;
+                $scope.detailPanelScrollUp = 0;
+                $scope.chatMarginTop = $scope.item.firstRowHeight + 50;
+            });
 
+            $timeout(function() {
+                $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
+                $scope.isPanelSlow = false;
+            }, 1000);
         }
-
-        $scope.isEdit = false;
-
-    }
-
-    function addMinutes(newdate, minutes) {
-        var date = new Date(newdate);
-        console.log('Date:', date);
-        return new Date(date.getTime() + minutes*60000);
-    }
-
-    function saveDate(newdate) {
-        if( newdate == '' ) {
-            $scope.showEvent.date = undefined;
-            Event.showEvent.date = undefined;
-        }
-        else {
-            var date = new Date(newdate);
-            $scope.showEvent.date = date;
-            Event.showEvent.date = date;
-        }
-        Event.myEvent = $scope.showEvent;
-        Event.save();
-        Event.resetMyEvent();
-        getLocationWeather();
     }
 
     //  Other functions
     calculateScreenSize();
 
-    angular.element(window).bind('resize', function () {
-        calculateScreenSize();
-    });
+    // angular.element(window).bind('resize', function () {
+    //     calculateScreenSize();
+    // });
 
     function calculateScreenSize() {
         $timeout(function() {
@@ -821,6 +595,173 @@ console.log('Release');
                     $scope.item.colletionItemWidth = $scope.item.width / 6;
             }
         });
+    }
+
+}])
+
+
+.controller('EventEditController',
+        [
+            '$scope',
+            'Event',
+            'Participant',
+            '$state',
+            '$stateParams',
+            '$ionicLoading', 
+            '$ionicPopup',
+            '$ionicActionSheet',
+            '$timeout',
+            '$filter',
+            'PushService',
+            'ErrorHandler',
+            function(
+                $scope,
+                Event,
+                Participant,
+                $state,
+                $stateParams, 
+                $ionicLoading,
+                $ionicPopup,
+                $ionicActionSheet,
+                $timeout,
+                $filter,
+                theme,
+                PushService,
+                ErrorHandler
+            )
+    {
+console.log('');
+console.log('<<<<<<-----------   Edit Screen  ---------->>>>>');
+
+    
+    $scope.myFacebookId = Parse.User.current().get('facebookId');
+console.log('Event.myEvent: ', Event.myEvent);
+    if( $stateParams.objectId == '') {
+        $state.go('events');
+        return;
+    }
+    else if( !Event.myEvent ) {
+        $state.go('showEvent', {objectId: $stateParams.objectId});
+        return;
+    }
+    
+    $scope.editEvent = Event.myEvent;
+
+    console.log('Event.myEvent: ', Event.myEvent);
+
+    if($scope.editEvent.background_url) {
+        $scope.background_image_url = $scope.editEvent.background_url;
+    }
+    else if($scope.editEvent.place_image_url) {
+        $scope.background_image_url = $scope.editEvent.place_image_url;
+    }
+    else {
+        $scope.background_image_url = 'img/themeIcon/'+$scope.editEvent.theme+'.png';
+    }
+
+    $scope.back = function() {
+        Event.resetMyEvent();
+        $state.go('showEvent', {objectId: Event.showEvent.id});
+    }
+
+    $scope.changePhoto = function() {
+        console.log('change photo!');
+    }
+
+    $scope.deleteEvent = function() {
+
+        $ionicPopup.confirm({
+            title: $filter('translate')('event_delete'),
+            template: $filter('translate')('event_delete_confirm')+$scope.editEvent.name+'?',
+            okText: $filter('translate')('event_delete'),
+            okType: 'button-assertive',
+            cancelText: $filter('translate')('cancel'),
+            cancelType: 'button-stable'
+        }).then(function(result) {
+            if(result) {
+
+                $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
+
+                Event.myEvent.isDeleted = true;
+                Event.save().then(function(){
+                    console.log('Event deleted successfully!');
+
+                    var notify_tokens = [];
+                    var push_message = '';
+                    var payload = {
+                    };
+                    for (var i = 0; i < $scope.editEvent.participants.length; i++) {
+                        notify_tokens.push($scope.editEvent.participants[i].device_token);
+                    }
+                    if( notify_tokens.length > 0 ) {
+                        push_message = Event.myEvent.name+' '+$filter('translate')('event_push_canceled');
+                        PushService.send(notify_tokens, push_message, payload);
+                    }
+                    $state.go('events');
+                }).catch(function(error){
+                    ErrorHandler.error('EventShowController', 'deleteEvent()', error.message);
+                }).finally(function(){
+                    $ionicLoading.hide();
+                });
+            }
+        });
+    }
+
+
+//  Edit Place  -------------------
+    $scope.placePressed = function() {
+
+        if( !$scope.editEvent.place_name ) {
+            $state.go('editEventPlace', {objectId: $scope.editEvent.id});
+        }
+        else {
+
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: $filter('translate')('event_place_edit') }
+                ],
+                destructiveText: $filter('translate')('event_place_clear'),
+                // titleText: 'Modify your album',
+                cancelText: $filter('translate')('cancel'),
+                cancel: function() {
+                    // add cancel code..
+                },
+                buttonClicked: function(index) {
+                    console.log('Button clicked. Index = ', index);
+                    switch(index) {
+                        case 0: 
+                            $state.go('editEventPlace', {objectId: $scope.editEvent.id});
+                            break;
+                        default: break;
+                    }
+                    hideSheet();
+                    return ;
+                },
+                destructiveButtonClicked: function() {
+                    console.log('chegou ao delete place');
+                    hideSheet();
+                    // Delete place
+                    Event.deletePlace();
+                    $scope.editEvent = Event.myEvent;
+                }
+            });
+
+            // For example's sake, hide the sheet after two seconds
+            $timeout(function() {
+                hideSheet();
+            }, 8000);
+        }
+    }
+
+//  Edit Participants Section -------------------
+    $scope.editParticipants = function() {
+        $state.go('editEventFriends', {objectId: $scope.editEvent.id});
+    }
+
+//  Data Section --------------------------------
+    $scope.editDate = function() {
+        $state.go('editEventDate', {objectId: $scope.editEvent.id});
     }
 
 }])
@@ -869,13 +810,12 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
     }
 
     $scope.back = function() {
-        Event.resetMyEvent();
         if( $scope.isNew ) {
             Event.resetMyEvent();
             $state.go('events');
         }
         else {
-            $state.go('showEvent', {objectId: $scope.editEvent.id});
+            $state.go('editEvent', {objectId: $scope.editEvent.id});
         }
     }
 
@@ -911,6 +851,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Event.myEvent.theme = theme.name;
 
         $timeout(function() {
+           console.log('theme.name: ', theme.name);
             Theme.incrementUsage(theme.name);
         });
         
@@ -1014,7 +955,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
             $state.go('editEventDate', {isNew: true, objectId: $scope.editEvent.id});
         }
         else {
-            $state.go('showEvent', {objectId: $scope.editEvent.id});
+            $state.go('editEvent', {objectId: $scope.editEvent.id});
         }
     }
 
@@ -1357,9 +1298,14 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-    $scope.showEvent = Event.showEvent;
+    if($stateParams.objectId=''){
+        $state.go('events');
+    }
+    else if(!Event.showEvent) {
+        $state.go('showEvent', {objectId: $stateParams.objectId});
+    }
 
-    calculateScreenSize();
+    $scope.showEvent = Event.showEvent;
 
     if( !$scope.showEvent.place_id ) {
 
@@ -1459,19 +1405,6 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
     }
 
-
-    //  Other functions
-    angular.element(window).bind('resize', function () {
-        calculateScreenSize();
-    });
-
-    function calculateScreenSize() {
-        $scope.item = {
-                height: $window.innerHeight +'px',
-                width:  $window.innerWidth + 'px'
-            };
-    }
-
 }])
 
 
@@ -1526,7 +1459,7 @@ console.log('Event.myEvent: ', Event.myEvent);
             $state.go('editEventName', {isNew: true, objectId: $scope.editEvent.id});
         }
         else {
-            $state.go('showEvent', {objectId: $scope.editEvent.id});
+            $state.go('editEvent', {objectId: $scope.editEvent.id});
         }
     }
 
@@ -1649,7 +1582,6 @@ console.log('Event.myEvent: ', Event.myEvent);
                 height: ($window.innerHeight-160) +'px',
                 width:  $window.innerWidth + 'px'
             };
-console.log('item: ', $scope.item);
     }
 
 }]);
