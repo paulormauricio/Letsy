@@ -21,7 +21,7 @@
         <ion-item class="cover coverLight" ng-repeat="myEvent in myEvents track by myEvent.id" ng-click="showEvent(myEvent)" nav-transition="ios">
 
             <span ng-switch="!myEvent.background_url">
-                <div ng-switch-when="false" class="background backgroundImage" 
+                <div ng-switch-when="false" class="background backgroundImage backgroundOpacity" 
                      ng-style="{'background-image': 'url('+myEvent.background_url+')'}"></div>
                 <div ng-switch-when="true" class="background backgroundImage" 
                      ng-style="{'background-image': 'url(img/themeIcon/'+myEvent.theme+'.png)'}" style="max-width: 220px; margin-left: -30px;"></div>

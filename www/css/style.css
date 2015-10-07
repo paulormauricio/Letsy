@@ -416,6 +416,7 @@ a {
 }
 
 .buttons .col i {
+	width: 100%;
 	font-size: 30px;
 	margin-bottom: 0px;
 	display: block;
@@ -442,13 +443,15 @@ a {
 	width: 100%;
 	left: 0px;
 	bottom: 2px;
+	white-space: normal;
+  	line-height: 0.9;
 }
 
 #dayLabel {
 	position: absolute;
-	left: 50%;
+	left: 54%;
 	margin-left: -5px;
-	top: 22px;
+	top: 23px;
 	font-weight: bold;
 	width: 10px;
 	text-align: center;
@@ -656,9 +659,11 @@ i.edit {
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
+}
 
-	-webkit-filter: opacity(40%); 
-    filter: opacity(40%); 
+.backgroundImage.backgroundOpacity {
+	-webkit-filter: opacity(50%); 
+    filter: opacity(50%); 
 }
 
 .blur {
@@ -960,13 +965,16 @@ i.edit {
 #editEvent .bottom {
 	padding: 30px 0px 15px 15px;
 	font-size: 25px;
+}
+
+.textCover {
 	background: rgba(0, 0, 0, 0.4); /* Old browsers */
-	background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .8) 95%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0, 0, 0, 0)), color-stop(95%,rgba(0, 0, 0, .8))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .8) 95%); /* IE10+ */
-	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .7) 95%); /* W3C */
+	background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .4) 95%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0, 0, 0, 0)), color-stop(95%,rgba(0, 0, 0, .4))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .4) 95%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .4) 95%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .4) 95%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 10%,rgba(0, 0, 0, .6) 95%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 
@@ -985,10 +993,6 @@ i.edit {
 	bottom: auto;
 }
 
-#showEvent.hide {
-	margin-top: 19px !important;
-}
-
 #showEvent, #chats {
 	border: 0px;
 	padding: 0px;
@@ -1005,6 +1009,22 @@ i.edit {
 	margin: 8px 6px;
 }
 
+#showEvent .mainPanel .bottom {
+	padding: 50px 0px 25px 15px !important;
+}
+
+#showEvent  .mainPanel .bottom > * {
+	margin: 0px;
+	padding: 0px;
+}
+
+#showEvent h1, #showEvent h2 {
+	color: white;
+}
+
+#showEvent .cover {
+	background-color: rgba(0, 0, 0, 0.6) !important;
+}
 
 button.action {
 	position: absolute;

@@ -4,18 +4,27 @@
     <button class="button button-clear left" ng-click="back(); $event.stopPropagation();">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
+
+    <!-- <div class="borderTop themeBackgroundColor" ng-hide="isShowDetailPanel" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" style="position: absolute; bottom: -15px; left: 0px; width: 100%; text-align: center; padding: 0px; line-height: 0;">
+        <i class="ion-android-arrow-dropdown"></i>
+    </div> -->
+
     <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
+
+
     <button class="button button-clear right invisible" ng-class="{'visible':isHost && !isOffline && isShowDetailPanel}" ng-click="edit()">
         <i class="ion-edit"></i>
     </button>
+
+
 </ion-header-bar>
 
 
 <div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth - 19) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
 
-    <div class="backgroundImage" ng-style="{'background-image': 'url('+background_image_url+')', 'height': 80 + item.firstRowHeight + item.colletionItemWidth + 2*imageResizeHeight+30+'px', 'top': '-'+(imageResizeHeight+30)+'px'}"></div>
+    <div class="backgroundImage backgroundOpacity" ng-style="{'background-image': 'url('+background_image_url+')', 'height': 80 + item.firstRowHeight + item.colletionItemWidth + 2*imageResizeHeight+30+'px', 'top': '-'+(imageResizeHeight+30)+'px'}"></div>
 
-    <ion-item ng-style="{'height': item.firstRowHeight + imageResizeHeight + 'px'}">
+    <ion-item class="mainPanel" ng-style="{'height': item.firstRowHeight + imageResizeHeight + 'px'}">
 
         <button class="button-left button button-balanced invisible" ng-class="{'visible': !isOffline && isShowJoinButton}" ng-click="joinEvent()">
             <i class="icon ion-log-in"></i>
@@ -26,20 +35,22 @@
         </button>
 
 
-        <h1 ng-show="showEvent.name"
-            ng-click="editName()"
-            class="topHalf centered" ng-class="{'lower': !showEvent.place_name}">
-            {{::showEvent.name}}
-        </h1>   
-        <h2 ng-show="showEvent.place_name"
-            class="bottomHalf centered">
-            {{::showEvent.place_name}}
-        </h2>
+        <div class="bottom textCover">
+            <h1 ng-show="showEvent.name"
+                ng-click="editName()"
+                class="" ng-class="{'lower': !showEvent.place_name}">
+                {{::showEvent.name}}
+            </h1>   
+            <h2 ng-show="showEvent.place_name"
+                class="">
+                {{::showEvent.place_name}}
+            </h2>
+        </div>
 
     </ion-item>
     
     <!-- Event Date / Weather / Place  -->
-    <ion-item class="noPadding borderTop">
+    <ion-item class="noPadding borderTop cover">
         <div class="buttons row">
             <div class="col" ng-click="editDate()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
                 <div ng-switch="!showEvent.date">
@@ -76,7 +87,7 @@
                             </span>
                             <span ng-switch-when="false">
                                 <i class="ion-map"></i>
-                                <span translate="event_place_see_map"></span>
+                                <span class="title" translate="event_place_see_map"></span>
                             </span>
                         </span>
                     </span>
@@ -90,7 +101,7 @@
     </ion-item>
 
     <!-- Participants -->
-    <ion-item class="borderTop noPadding slower" ng-class="{'slideUp': !isShowParticipants}" ng-style="{'height': item.colletionItemWidth + 'px'}">
+    <ion-item class="borderTop noPadding slower cover" ng-class="{'slideUp': !isShowParticipants}" ng-style="{'height': item.colletionItemWidth + 'px'}">
         <ion-scroll class="horizontalList" direction="x" scrollbar-x="false">
             <ion-item ng-repeat="participant in showEvent.participants_all" style="margin: -3px 0px" ng-style="{'width': item.colletionItemWidth + 'px', 'height': item.colletionItemWidth + 'px'}" ng-click="participantClick($index)">
                 <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="slower" ng-style="{'height': item.colletionItemWidth+'px', 'width': item.colletionItemWidth+'px'}">

@@ -476,25 +476,14 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
         });
     }
 
-
 //  Edit Place  -------------------
     $scope.placePressed = function() {
-
-        if( $scope.showEvent.place_id != undefined && !$scope.isEdit) {
+        if( $scope.showEvent.place_lat != undefined && $scope.showEvent.place_lng != undefined ) {
             $state.go('showEventMap', {objectId: $scope.showEvent.id});
         }
-
-        if( $scope.isShowJoinButton || !$scope.isEdit) return;
-
-        if( !$scope.showEvent.place_name ) {
-            Event.myEvent = $scope.showEvent;
-            $state.go('editEventPlace', {objectId: $scope.showEvent.id});
-        }
-
     }
 
 //  Edit Participants Section -------------------
-
     $scope.showParticipants = function() {
         console.log('chegou');
         $scope.isShowParticipants = !$scope.isShowParticipants;
