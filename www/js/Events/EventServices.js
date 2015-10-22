@@ -92,7 +92,7 @@ console.log('<------ Start Events ----------->');
 
 	    } else {
 	        // Return cached data as a promise
-	        console.log('Loaded from cache');
+	        console.log('Load events from cache');
 	        return $q.when(_myEvents);
 	    }
 	}

@@ -118,9 +118,9 @@ console.log('<---------- Refresh events ----------->');
         Event.notifyHost(newEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+newEvent.name );
     }
 
-    angular.element(window).bind('resize', function () {
-        calculateColectionItemSize();
-    });
+    // angular.element(window).bind('resize', function () {
+    //     calculateColectionItemSize();
+    // });
 
     $scope.leaveEvent = function(newEvent, index) {
         console.log('leave Event index: ', index);
