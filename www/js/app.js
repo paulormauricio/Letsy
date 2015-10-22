@@ -134,7 +134,7 @@ angular.module('letsy',
   $ionicAppProvider.identify({
     app_id: '8018ff6a',
     api_key: '1db15076a7bbfda81a4f728a1f904332e490096b9140fb4d',
-    dev_push: true
+    dev_push: false
   });
 }])
 
