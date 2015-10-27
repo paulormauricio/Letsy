@@ -36,6 +36,13 @@
   <feature name="Keyboard">
       <param name="ios-package" value="IonicKeyboard" onload="true" />
   </feature>
+
+  <!-- <gap:plugin name="com.indigoway.cordova.whitelist.whitelistplugin" version="1.1.1" /> -->
+  <gap:plugin name="cordova-plugin-whitelist" source="npm" />
+
+  <!-- <gap:plugin name="onesignal-cordova-plugin-pgb-compat" source="npm" />
+  <gap:plugin name="cordova-plugin-googleplayservices" source="npm" />
+  <gap:plugin name="cordova-plugin-android-support-v4" source="npm" /> -->
   
   <preference name="CameraUsesGeolocation" value="false" />
   <preference name="permissions" value="none"/>

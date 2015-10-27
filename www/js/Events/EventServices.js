@@ -225,7 +225,7 @@ console.log('----->  Database change: ', change);
 		  },
 		  error: function(error) {
 		    ErrorHandler.error('EventServices', 'Event.getMyEvents()',error.message);
-		    $rootScope.$apply(function() { deferred.resolve([]); });
+		    $rootScope.$apply(function() { deferred.resolve(undefined); });
 		  }
 		});
 		return deferred.promise;

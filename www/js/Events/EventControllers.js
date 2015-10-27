@@ -51,7 +51,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 console.log('<---------- Refresh events ----------->');
         Event.getMyEvents().then(function(objects) {
             console.log('myEvents: ', objects);
-            if(objects.length>0)
+            if(objects)
                 $scope.myEvents = objects;
             else 
                 loadLocalEvents();
@@ -1480,7 +1480,7 @@ console.log('Event.myEvent: ', Event.myEvent);
                 isSelected: false
             }
         }
-        console.log('days: ', $scope.days);
+        // console.log('days: ', $scope.days);
 
         newDate = new Date();
         aux = newDate.getHours();
