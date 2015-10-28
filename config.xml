@@ -44,6 +44,8 @@
   <gap:plugin name="cordova-plugin-googleplayservices" source="npm" />
   <gap:plugin name="cordova-plugin-android-support-v4" source="npm" /> -->
   
+  <allow-navigation href="*" />
+  
   <preference name="CameraUsesGeolocation" value="false" />
   <preference name="permissions" value="none"/>
   <preference name="orientation" value="portrait"/>

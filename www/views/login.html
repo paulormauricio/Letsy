@@ -8,11 +8,17 @@
 	
 	<div style="position: absolute; bottom: 12%; padding: 10px 0px; left: 0px; right: 0px;">
 	
-		
-		<button class="button button-block relative" ng-click="login()">
-			<img src="img/icons/facebook.png">
-			<span translate="login_enter"></span>
-		</button>
+		<span ng-switch="!isLoginPressed">
+			<span ng-switch-when="true">
+				<button class="button button-block relative" ng-click="login()">
+					<img src="img/icons/facebook.png">
+					<span translate="login_enter"></span>
+				</button>
+			</span>
+			<span ng-switch-when="false" id="waiting" class="centered">
+				<ion-spinner></ion-spinner>
+			</span>
+		</span>
 
 	</div>
 	<div class="bottom smaller centered italic" style="opacity: .5; font-size: 9px !important;" translate="login_policy"></div>

@@ -6,59 +6,76 @@
         <button class="button button-clear" ng-click="save()" translate="done"></button>
 </ion-header-bar>
 
-<ion-content ng-init="loadDates()" has-bouncing="true" scroll="false" ng-load="">
+<ion-content ng-init="loadDates()" has-bouncing="true" scroll="false" class="has-footer">
 
-    <table class="custom-date-picker showDown" ng-class="{'loaded': isLoaded}">
-        <thead>
-            <tr>
-                <th><div translate="date_day"></div></th>
-                <th><div translate="date_hour"></div></th>
-                <th><div translate="date_minute"></div></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <ion-scroll delegate-handle="daysScroll" ng-style="{'height': item.height}" scrollbar-y="false">
-                        <ion-item   ng-repeat="day in days" 
-                                    ng-click="selectDay($index)" 
-                                    class="noClick"
-                                    ng-class="{'this': day.isSelected, 'themeColor': day.isSelected}" 
-                                    ng-style="{'height': scrollItemHeight+'px'}">
-                            {{day.desc}}
-                        </ion-item>
-                    </ion-list>
-                </td>
-                <td>
-                    <ion-scroll delegate-handle="hoursScroll" ng-style="{'height': item.height}" scrollbar-y="false">
-                        <ion-item   ng-repeat="hour in hours" 
-                                    ng-click="selectHour($index)" 
-                                    class="noClick"
-                                    ng-class="{'this': hour.isSelected, 'themeColor': hour.isSelected}" 
-                                    ng-style="{'height': scrollItemHeight+'px'}">
-                            {{hour.desc}}
-                        </ion-item>
-                    </ion-list>
-                </td>
-                <td>
-                    <ion-scroll delegate-handle="minutesScroll" ng-style="{'height': item.height}" scrollbar-y="false">
-                        <ion-item   ng-repeat="minute in minutes" 
-                                    ng-click="selectMinute($index)" 
-                                    class="noClick"
-                                    ng-class="{'this': minute.isSelected, 'themeColor': minute.isSelected}" 
-                                    ng-style="{'height': scrollItemHeight+'px'}">
-                            {{minute.desc}}
-                        </ion-item>
-                    </ion-list>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <ion-list>
 
+        <ion-item>
+        <table class="custom-date-picker ">
+            <tbody>
+                <tr>
+                    <td ng-click="changeDay(1)"><i class="ion-arrow-up-b"></i></td>
+                    <td ng-click="changeHour(1)"><i class="ion-arrow-up-b"></i></td>
+                    <td ng-click="changeMinute(1)"><i class="ion-arrow-up-b"></i></td>
+                </tr>
+                <tr>
+                    <td class="huge">
+                        <ionic-datepicker input-obj="datepickerObject">
+                            <span ng-bind-html="selectedDayDesc"></span>
+                        </ionic-datepicker>
+                    </td>
+                    <td class="huge">
+                        {{selectedHourDesc}}
+                    </td>
+                    <td class="huge">
+                        {{selectedMinuteDesc}}
+                    </td>
+                </tr>
+                <tr>
+                    <td ng-click="changeDay()" ng-class="{'invisible': !allowLowerDays}">
+                        <i class="ion-arrow-down-b"></i>
+                    </td>
+                    <td ng-click="changeHour()" ng-class="{'invisible': !allowLowerHours}">
+                        <i class="ion-arrow-down-b"></i>
+                    </td>
+                    <td ng-click="changeMinute()" ng-class="{'invisible': !allowLowerMinutes}">
+                        <i class="ion-arrow-down-b"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </ion-item>
 
-    <button class="button button-positive button-block themeBackgroundColorLight bottom" style="bottom" ng-click="save(true)">
-        <i class="icon ion-ios-timer-outline"></i>
-        {{'event_date_tbd' | translate}}
-    </button>
+        <div class="item-divider"></div>
+
+        <ion-toggle ng-model="isRepeat" toggle-class="toggle-balanced" ng-change="changeRepeat()" ng-true-value="true" ng-false-value="false">
+            <span translate="events_date_repeat"></span>
+        </ion-toggle>
+
+        <ion-scroll ng-style="{'height': scroll.height+'px'}">
+            <span ng-style="{'height': isRepeat ? 'auto' : '0px'}" class="overflow block">
+                <ion-radio class="small" ng-model="editEvent.repeatEventType" ng-value="1" >
+                    <span translate="events_date_repeat_day"></span>
+                </ion-radio>
+                <ion-radio class="small" ng-model="editEvent.repeatEventType" ng-value="2" >
+                    <span translate="events_date_repeat_week"></span>
+                </ion-radio>
+                <ion-radio class="small" ng-model="editEvent.repeatEventType" ng-value="3" >
+                    <span translate="events_date_repeat_2week"></span>
+                </ion-radio>
+                <ion-radio class="small" ng-model="editEvent.repeatEventType" ng-value="4" >
+                    <span translate="events_date_repeat_month"></span>
+                </ion-radio>
+            </span> 
+
+        <ion-scroll>
+    </ion-list>
 
 </ion-content>
+
+<ion-footer-bar align-title="center" class="themeBackgroundColorLight">
+    <button class="button button-block button-clear themeBackgroundColorLight centered" ng-click="save(true)" style="margin:0px">
+        <i class="icon ion-ios-timer-outline"></i>
+        {{'event_date_tbd' | translate}}
+    </button
+</ion-footer-bar>

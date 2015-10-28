@@ -22,7 +22,7 @@ body > * {
 .bar.bar-positive.themeBackgroundColor i {
 	color: white;
 }
-.themeBackgroundColor {
+.themeBackgroundColor, .date_selected  {
 	background-color: rgb(18, 86, 136) !important;
 	border: 0px !important;
 	color: white;
@@ -51,6 +51,15 @@ body > * {
 }
 
 
+.popup-container {
+	background: rgba(0, 0, 0, 0.5);
+}
+.popup-body {
+	overflow: hidden;
+}
+.date_selected {
+	border-radius: 3px;
+}
 
 .hidden {
 	display: none !important;
@@ -853,7 +862,7 @@ i.edit {
 #chats.showDate .chat img.profile-pic {
 	right: 60px;
 }
-.bar-footer {
+#newChat .bar-footer {
 	overflow: visible !important;
 	height: auto;
 	background-color: #eee !important;
@@ -905,7 +914,8 @@ i.edit {
 /** custom-date-picker **/
 
 .custom-date-picker {
-	margin-top: 26px;
+	margin: 0px auto;
+	max-width: 400px;
 }
 .custom-date-picker th {
 	padding: 0px 10px;
@@ -921,7 +931,7 @@ i.edit {
 	vertical-align: top;
 	font-size: 12px;
 	color: #999;
-	padding: 10px 12px;
+	padding: 15px 12px;
 	overflow: hidden;
 	text-align: center;
 	width: 30%;
@@ -929,6 +939,32 @@ i.edit {
 .custom-date-picker td:first-child {
 	text-align: right;
 	width: 40%;
+}
+.custom-date-picker td.huge {
+	color: #555;
+	font-size: 45px;
+	line-height: 1.0;
+	vertical-align: middle;
+	padding: 0px 10px;
+	height: 70px;
+	position: relative;
+}
+.custom-date-picker tr td:first-child {
+	text-align: center;
+}
+.custom-date-picker td:first-child.huge {
+	font-size: 35px;
+}
+.custom-date-picker td.huge small {
+	font-size:60%;
+	position: absolute;
+	width: 100%;
+  	left: 0px;
+  	bottom: 0px;
+}
+.custom-date-picker i {
+	font-size: 17px;
+	color: #aaa;
 }
 
 .custom-date-picker td .item {
@@ -944,6 +980,15 @@ i.edit {
 	font-weight: bold;
 	color: #555;
 	font-size: 13px;
+}
+
+.item-radio.small .item-content {
+	padding: 7px 16px;
+	font-size: 15px !important;
+}
+.item-radio.small .radio-icon {
+	font-size: 20px;
+	padding: 5px 20px;
 }
 
 /** Lists  **/
@@ -1309,6 +1354,15 @@ button.action > i {
 	margin: 5px;
 }
 
+#waiting .spinner {
+	stroke: white;
+	fill: white;
+}
+#waiting .spinner svg {
+	width: 60px;
+  	height: 60px;
+}
+
 /*******     Backgrounds Styles     *******/
 
 .bg-lightblue {
@@ -1363,6 +1417,10 @@ button.action > i {
 	border-radius: 50% !important;
 }
 
+.overflow {
+	overflow: hidden !important;
+}
+
 .centered {
 	text-align: center;
 }
@@ -1399,6 +1457,9 @@ button.action > i {
 
 .inline {
 	display: inline-block !important;
+}
+.block {
+	display: block !important;
 }
 
 .padding {

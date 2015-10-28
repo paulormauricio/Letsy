@@ -5,7 +5,7 @@ angular.module('letsy',
       'ionic.service.core',
       'ionic.service.push',
       'ion-autocomplete',
-      'ion-sticky',
+      'ionic-datepicker',
       'ngGPlaces',
       'monospaced.elastic',
       'letsy.translations',
@@ -134,7 +134,7 @@ angular.module('letsy',
   $ionicAppProvider.identify({
     app_id: '8018ff6a',
     api_key: '1db15076a7bbfda81a4f728a1f904332e490096b9140fb4d',
-    dev_push: false
+    dev_push: true
   });
 }])
 

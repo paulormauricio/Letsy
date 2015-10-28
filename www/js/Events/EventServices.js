@@ -169,6 +169,7 @@ console.log('----->  Database change: ', change);
 				result.place_lat = object.get('Event').get('place_lat');
 				result.place_lng = object.get('Event').get('place_lng');
 				result.date = object.get('Event').get('date');
+				result.repeatEventType = object.get('Event').get('repeatEventType');
 				result.createdBy = object.get('Event').get('createdBy');
 				result.isDeleted = object.get('Event').get('isDeleted');
 				result.updatedAt = object.get('Event').updatedAt;
@@ -272,6 +273,7 @@ console.log('----->  Database change: ', change);
 				result.place_lat = object.get('Event').get('place_lat');
 				result.place_lng = object.get('Event').get('place_lng');
 				result.date = object.get('Event').get('date');
+				result.repeatEventType = object.get('Event').get('repeatEventType');
 				result.createdBy = object.get('Event').get('createdBy');
 				result.isDeleted = object.get('Event').get('isDeleted');
 				result.updatedAt = object.get('Event').updatedAt;
@@ -348,6 +350,7 @@ console.log('Event loaded locally: ', doc);
 				result.place_lat = object.get('place_lat');
 				result.place_lng = object.get('place_lng');
 				result.date = object.get('date');
+				result.repeatEventType = object.get('repeatEventType');
 				result.createdBy = object.get('createdBy');
 				result.updatedAt = object.updatedAt;
 				result.isDeleted = object.get('isDeleted');
@@ -402,6 +405,7 @@ console.log('Event loaded locally: ', doc);
 			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
 			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
 			if(this.myEvent.date) 			myEvent_temp.date = this.myEvent.date;
+			if(this.myEvent.repeatEventType)myEvent_temp.repeatEventType = this.myEvent.repeatEventType;
 			if(this.myEvent.createdBy) 		myEvent_temp.createdBy = this.myEvent.createdBy;
 
 			saveEvent.save( myEvent_temp , {
@@ -416,26 +420,7 @@ console.log('saved newEvent: ', newEvent);
 				//Add to local database
 				updateLocalDB(myEvent_temp);
 				$rootScope.$apply(function() { deferred.resolve(newEvent); });
-				return;
-
-				// $q.when(_db.get(myEvent_temp._id)
-				// 	.then(function(doc) {
-				// 		myEvent_temp._rev = doc._rev;
-				// 		return _db.put( myEvent_temp );
-				// 	})
-				// 	//.then(function(res){ console.log('Imported Event: ', res);})
-				// 	.catch(function (err) { 
-				// 		if( err.name === 'not_found' ) {
-				// 			_db.put(myEvent_temp).then(function(res){console.log('Put new event: ', res);}).catch(function(err){console.log('Import/Put new Event Error: ', err);})
-				// 		}
-				// 		else {
-				// 			console.log('Import Event Error: ', err); 
-				// 		}
-				// 	})
-				// );
 				
-				// onDatabaseChange({doc: myEvent_temp, deleted: false, id: myEvent_temp._id});			  	
-
 			  },
 			  error: function(gameScore, error) {
 			  	ErrorHandler.error('EventServices', 'Event.save()',error.message);

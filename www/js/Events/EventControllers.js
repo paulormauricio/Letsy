@@ -118,10 +118,6 @@ console.log('<---------- Refresh events ----------->');
         Event.notifyHost(newEvent, Parse.User.current().get('first_name')+' '+Parse.User.current().get('last_name')+$filter('translate')('event_push_user_join')+newEvent.name );
     }
 
-    // angular.element(window).bind('resize', function () {
-    //     calculateColectionItemSize();
-    // });
-
     $scope.leaveEvent = function(newEvent, index) {
         console.log('leave Event index: ', index);
 
@@ -148,6 +144,9 @@ console.log('<---------- Refresh events ----------->');
         });
     }
 
+    // angular.element(window).bind('resize', function () {
+    //     calculateColectionItemSize();
+    // });
     function calculateColectionItemSize() {
         $timeout(function() {
             var width =  $window.innerWidth;
@@ -1440,6 +1439,8 @@ console.log('<<<<<<-----------   Edit Date Screen  ---------->>>>>');
             $scope.editEvent.id = $stateParams.objectId; 
     }
 
+    $scope.isRepeat = ($scope.editEvent.repeatEventType == 0 || !$scope.editEvent.repeatEventType) ? false : true;
+
 console.log('$scope.editEvent: ', $scope.editEvent);
 console.log('Event.myEvent: ', Event.myEvent);
 
@@ -1452,98 +1453,189 @@ console.log('Event.myEvent: ', Event.myEvent);
         }
     }
 
+    var selectedDay = 0;
+    var selectedDate = Date();
+    function setDay(newDate) {
+        selectedDate = newDate;
+        selectedDay = newDate.getDate();
+
+        var week = $filter('translate')('date_week_'+$filter('date')(newDate,'EEE').toLowerCase());
+        var day = $filter('date')(newDate, 'dd/')+$filter('translate')('date_month_'+$filter('date')(newDate, 'MM'));
+
+        $scope.selectedDayDesc = day + ' <small>('+week+')</small>';
+    }
+    var selectedHour = 0;
+    function setHour(newDate) {
+        selectedHour = newDate.getHours();
+        if( selectedHour < 10 ) $scope.selectedHourDesc = '0'+selectedHour;
+        else $scope.selectedHourDesc = selectedHour;
+    }
+    var selectedMinute = 0;
+    function setMinute(newDate) {
+        selectedMinute = newDate.getMinutes();
+        if( selectedMinute < 10 ) $scope.selectedMinuteDesc = '0'+selectedMinute;
+        else $scope.selectedMinuteDesc = selectedMinute;
+    }
+    function evaluateDates() {
+        var newDate = new Date();
+        if( newDate.getYear() >= selectedDate.getYear() &&
+            newDate.getMonth() >= selectedDate.getMonth() &&
+            newDate.getDate() >= selectedDay )
+            $scope.allowLowerDays = false;
+        else
+            $scope.allowLowerDays = true;
+
+        if( newDate.getHours() >= selectedHour && !$scope.allowLowerDays) {
+            $scope.allowLowerHours = false;
+            setHour(newDate);
+            setMinute(newDate);
+        }
+        else 
+            $scope.allowLowerHours = true;
+        
+
+        if( newDate.getMinutes() >= selectedMinute && !$scope.allowLowerHours) {
+            $scope.allowLowerMinutes = false;
+            setMinute(newDate);
+        }
+        else 
+            $scope.allowLowerMinutes = true;
+        
+    }
+
+    Date.prototype.addDays = function(d) {    
+       this.setTime(this.getTime() + (d*24*60*60*1000)); 
+       return this;   
+    }
+    Date.prototype.addHours = function(h) {    
+       this.setTime(this.getTime() + (h*60*60*1000)); 
+       return this;   
+    }
+    Date.prototype.addMinutes = function(m) {    
+       this.setTime(this.getTime() + (m*60*1000)); 
+       return this;   
+    }
+
+    $scope.datepickerObject = {};
 
     $scope.loadDates = function() {
         console.log('chegou ao loadDates');
 
         var newDate = new Date();
-        var aux;
-        $scope.days = [];
-        $scope.hours = [];
-        $scope.minutes = [];
-        $scope.days[0] = {
-            day: newDate.getDate(),
-            month: newDate.getMonth()+1,
-            year: newDate.getFullYear(),
-            desc: $filter('translate')('date_today'),
-            isSelected: true
-        }
-        $scope.selectedDay = 0;
-        for(i=1; i<90; i++) {
-            newDate.setTime( newDate.getTime() + 1000 * 60 * 60 * 24 );
-            aux = $filter('date')(newDate, 'dd/')+$filter('translate')('date_month_'+$filter('date')(newDate, 'MM'));
-            $scope.days[i] = {
-                day: newDate.getDate(),
-                month: newDate.getMonth()+1,
-                year: newDate.getFullYear(),
-                desc: $filter('translate')('date_week_'+$filter('date')(newDate,'EEE').toLowerCase())+' '+aux,
-                isSelected: false
+        newDate.addHours(1);
+        newDate.setMinutes(0);
+
+        setDay(newDate);
+        setHour(newDate);
+        setMinute(newDate);
+
+        evaluateDates();
+
+        console.log('selectedDate: ', selectedDate.addDays(-1));
+
+        $scope.datepickerObject = {
+            titleLabel: $filter('translate')('date_select'),  //Optional
+            todayLabel: $filter('translate')('date_today'),  //Optional
+            closeLabel: $filter('translate')('event_close'),  //Optional
+            monthList: [
+                $filter('translate')('date_month_01'),
+                $filter('translate')('date_month_02'),
+                $filter('translate')('date_month_03'),
+                $filter('translate')('date_month_04'),
+                $filter('translate')('date_month_05'),
+                $filter('translate')('date_month_06'),
+                $filter('translate')('date_month_07'),
+                $filter('translate')('date_month_08'),
+                $filter('translate')('date_month_09'),
+                $filter('translate')('date_month_10'),
+                $filter('translate')('date_month_11'),
+                $filter('translate')('date_month_12')
+            ],
+            weekDaysList: [
+                $filter('translate')('date_week_su'),
+                $filter('translate')('date_week_m'),
+                $filter('translate')('date_week_t'),
+                $filter('translate')('date_week_w'),
+                $filter('translate')('date_week_t'),
+                $filter('translate')('date_week_f'),
+                $filter('translate')('date_week_s')
+            ],
+            setLabel: 'OK',  //Optional
+            setButtonType : 'themeBackgroundColor',  //Optional
+            todayButtonType : 'button-stable',  //Optional
+            closeButtonType : 'button-stable',  //Optional
+            inputDate: selectedDate,    //Optional
+            mondayFirst: true,    //Optional
+            // disabledDates: disabledDates,
+            templateType: 'popup', //Optional
+            showTodayButton: 'true', //Optional
+            modalHeaderColor: 'themeBackgroundColor', //Optional
+            modalFooterColor: 'bar-stable', //Optional
+            from: newDate,   
+            callback: function (val) {    //Mandatory
+                if(val) {
+                    setDay(val);
+                }
             }
-        }
-        // console.log('days: ', $scope.days);
-
-        newDate = new Date();
-        aux = newDate.getHours();
-        $scope.selectedHour = 0;
-        for(i=0; i<24; i++){
-            if(aux == i-1) $scope.selectedHour = i;
-            $scope.hours.push({
-                hour: i,
-                desc: i<10 ? '0'+i : i,
-                isSelected: (aux == i-1) ? true : false
-            });
-        }
-        $timeout(function() {
-            $ionicScrollDelegate.$getByHandle('hoursScroll').scrollTo(0, $scope.selectedHour*$scope.scrollItemHeight-13, true);
-        }, 500);
-
-        $scope.selectedMinute = 0;
-        newDate = new Date();
-        for(j=0; j<12; j++) {            
-            $scope.minutes.push({
-                minutes: j*5,
-                desc: j<2 ? '0'+j*5 : j*5,
-                isSelected: j==0 ? true : false
-            });
         }
 
         $ionicLoading.hide();
     }
 
-    $scope.selectDay = function(index) {
-        if($scope.selectedDay >= 0) 
-            $scope.days[$scope.selectedDay].isSelected = false;
-
-        $scope.selectedDay = index;
-        $scope.days[$scope.selectedDay].isSelected = true;
+    $scope.changeDay = function(isUp) {
+        if(isUp) 
+            selectedDate.addDays(1);
+        else 
+            selectedDate.addDays(-1);
+        setDay(selectedDate);
+        evaluateDates();
     }
-    $scope.selectHour = function(index) {
-        if($scope.selectedHour >= 0) 
-            $scope.hours[$scope.selectedHour].isSelected = false;
-
-        $scope.selectedHour = index;
-        $scope.hours[$scope.selectedHour].isSelected = true;
+    $scope.changeHour = function(isUp) {
+        if(isUp) 
+            selectedDate.addHours(1);
+        else 
+            selectedDate.addHours(-1);
+        setHour(selectedDate);
+        setDay(selectedDate);
+        evaluateDates();
     }
-    $scope.selectMinute = function(index) {
-        if($scope.selectedMinute >= 0) 
-            $scope.minutes[$scope.selectedMinute].isSelected = false;
-
-        $scope.selectedMinute = index;
-        $scope.minutes[$scope.selectedMinute].isSelected = true;
+    $scope.changeMinute = function(isUp) {
+        if(isUp) 
+            selectedDate.addMinutes(5);
+        else 
+            selectedDate.addMinutes(-5);
+        setMinute(selectedDate);  
+        setHour(selectedDate);
+        setDay(selectedDate); 
+        evaluateDates();
+    }
+    $scope.changeRepeat = function(val) {
+        if( $scope.isRepeat && $scope.editEvent.repeatEventType == 0 ||
+            !$scope.editEvent.repeatEventType) {
+            $scope.editEvent.repeatEventType = 1;
+        }
+        $scope.isRepeat = !$scope.isRepeat;
     }
 
     $scope.save = function(isEmpty) {
         
         if(!isEmpty) {
+            console.log('$scope.isRepeat: ', $scope.isRepeat);
+            console.log('$scope.editEvent.repeatEventType: ', $scope.editEvent.repeatEventType);
             Event.myEvent.date = new Date(
-                $scope.days[$scope.selectedDay].year,
-                $scope.days[$scope.selectedDay].month-1,
-                $scope.days[$scope.selectedDay].day,
-                $scope.hours[$scope.selectedHour].hour,
-                $scope.minutes[$scope.selectedMinute].minutes,
+                selectedDate.getFullYear(),
+                selectedDate.getMonth()-1,
+                selectedDay,
+                selectedHour,
+                selectedMinute,
                 0,
                 0
             );
+            Event.myEvent.repeatEventType = !$scope.isRepeat ? 0 : $scope.editEvent.repeatEventType;
+        }
+        else {
+            Event.myEvent.repeatEventType = 0;
+            Event.myEvent.date = undefined;
         }
 
         if( $stateParams.isNew ) {
@@ -1567,9 +1659,9 @@ console.log('Event.myEvent: ', Event.myEvent);
     });
 
     function calculateScreenSize() {
-        $scope.item = {
-                height: ($window.innerHeight-160) +'px',
-                width:  $window.innerWidth + 'px'
+        $scope.scroll = {
+                height: ($window.innerHeight-373),
+                width:  $window.innerWidth
             };
     }
 

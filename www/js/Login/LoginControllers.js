@@ -52,9 +52,11 @@ try {
     var fbLoginError = function(error){
       //alert('fbLoginError:'+error.message);
       fbLogged.reject(error);
+      $scope.isLoginPressed = false;
     };
 
     $scope.login = function() {
+      $scope.isLoginPressed = true;
 
 //alert('chegou ao Login');
       if (!window.cordova) {
@@ -86,6 +88,7 @@ try {
           },
           function(error) {
             ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me)',error);
+            $scope.isLoginPressed = false;
           }
         );
         //Get Friends
@@ -149,6 +152,7 @@ try {
                 error: function(error) {
 //alert('Login error: '+ error);
                   ErrorHandler.error('LoginController', 'facebookConnectPlugin.api(/me/friends) -> FriendRelation.save()',error.message);
+                  $scope.isLoginPressed = false;
                 }
               });
 
@@ -156,6 +160,7 @@ try {
           },
           function(error) {
             ErrorHandler.error('LoginController', 'Parse.Query.first()',error.message);
+            $scope.isLoginPressed = false;
           }
         );
         
