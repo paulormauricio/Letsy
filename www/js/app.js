@@ -2,6 +2,7 @@ angular.module('letsy',
     [
       'ionic',
       'ngCordova',
+      'ngIOS9UIWebViewPatch',
       'ionic.service.core',
       'ionic.service.push',
       'ion-autocomplete',

@@ -1654,9 +1654,9 @@ console.log('Event.myEvent: ', Event.myEvent);
 
     //  Other functions
     calculateScreenSize();
-    angular.element(window).bind('resize', function () {
-        calculateScreenSize();
-    });
+    // angular.element(window).bind('resize', function () {
+    //     calculateScreenSize();
+    // });
 
     function calculateScreenSize() {
         $scope.scroll = {
