@@ -26,14 +26,19 @@
 
   <gap:plugin name="nl.x-services.plugins.calendar" version="4.2.4" />
 
-  <gap:plugin name="com.phonegap.plugins.pushplugin" version="2.5.0" />
+  <!-- <gap:plugin name="com.phonegap.plugins.pushplugin" version="2.5.0" /> -->
 
-  <!-- <gap:plugin name="com.phonegap.plugins.facebookconnect" version="0.9.0">
+  <gap:plugin name="com.phonegap.plugins.facebookconnect" version="0.9.0">
     <param name="APP_ID" value="1536111309938547"/>
     <param name="APP_NAME" value="Letsy"/>
-  </gap:plugin> -->
+  </gap:plugin>
 
-  <gap:plugin name="cordova-plugin-pushnotification-parsepushnotification" source="npm" />
+  <!-- <gap:plugin name="cordova-plugin-pushnotification-parsepushnotification" source="npm" /> -->
+
+  <gap:plugin name="com.medlei.pushplugin">
+    <param name="APP_ID" value="3JNm1SIMsSFg9dURqfXPon40ttp1lxoE5eQKG2XQ" />
+    <param name="CLIENT_KEY" value="OeC50st0M2iByVBzoCBfS6arUJ7mgj4Lb4SMNvN5" />
+  </gap:plugin>
 
   <feature name="Keyboard">
       <param name="ios-package" value="IonicKeyboard" onload="true" />

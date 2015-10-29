@@ -7,7 +7,7 @@
  *
  */
 
-if (!window.cordova or true) {
+if (!window.cordova) {
 // This should override the existing facebookConnectPlugin object created from cordova_plugins.js
     var facebookConnectPlugin = {
 

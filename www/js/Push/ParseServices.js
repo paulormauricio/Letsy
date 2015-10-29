@@ -56,6 +56,38 @@ angular.module('letsy.PushServices',[])
 			    };  
 			}
 
+			if( parsePlugin ) {
+
+				parsePlugin.initialize(applicationId, clientKey, function() {
+				 
+				    parsePlugin.subscribe('SampleChannel', function() {
+				 
+				        parsePlugin.getInstallationId(function(id) {
+				 
+				            /**
+				             * Now you can construct an object and save it to your own services, or Parse, and correlate users to parse installations
+				             *
+				             var install_data = {
+				                installation_id: id,
+				                channels: ['SampleChannel']
+				             }
+				             *
+				             */
+				 
+				        }, function(e) {
+				            alert('error');
+				        });
+				 
+				    }, function(e) {
+				        alert('error');
+				    });
+				 
+				}, function(e) {
+				    alert('error');
+				});
+
+			}
+
 		},
 
 		subscribeToChannel: function(channel) {
