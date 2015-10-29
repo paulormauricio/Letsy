@@ -61,10 +61,10 @@ angular.module('letsy.lang_en_us', [])
 	event_date_clear: "Clear date",
 	event_date_not_defined: "To be defined",
 	events_date_repeat: 'Repeat event',
-	events_date_repeat_day: 'Every day',
-	events_date_repeat_week: 'Every week',
+	events_date_repeat_day: 'Daily',
+	events_date_repeat_week: 'Weekly',
 	events_date_repeat_2week: 'Every 2 weeks',
-	events_date_repeat_month: 'Every month',
+	events_date_repeat_month: 'Monthly',
 	event_date_tbd: "Decide later",
 
 	event_accept: 'Go',

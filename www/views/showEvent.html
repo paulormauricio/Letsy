@@ -1,6 +1,7 @@
 <ion-pane class="themeBackgroundColorLight">
 
 <ion-header-bar class="bar-positive themeBackgroundColor" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" ng-class="{'transparent': isShowDetailPanel}">
+
     <button class="button button-clear left" ng-click="back(); $event.stopPropagation();">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
@@ -9,18 +10,24 @@
         <i class="ion-android-arrow-dropdown"></i>
     </div> -->
 
-    <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
 
+    <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
 
     <button class="button button-clear right invisible" ng-class="{'visible':isHost && !isOffline && isShowDetailPanel}" ng-click="edit()">
         <i class="ion-edit"></i>
     </button>
 
-
 </ion-header-bar>
 
 
-<div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth - 19) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
+<div class="headerExtraBar themeBackgroundColor" ng-style="{'width': item.width+'px'}" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" ng-class="{'hidden': isShowDetailPanel}">
+    <i class="ion-android-arrow-dropdown"></i>
+</div>
+    
+    
+
+
+<div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth + 10) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
 
     <div class="backgroundImage backgroundOpacity" ng-style="{'background-image': 'url('+background_image_url+')', 'height': 80 + item.firstRowHeight + item.colletionItemWidth + 2*imageResizeHeight+30+'px', 'top': '-'+(imageResizeHeight+30)+'px'}"></div>
 
@@ -41,18 +48,26 @@
                 class="" ng-class="{'lower': !showEvent.place_name}">
                 {{::showEvent.name}}
             </h1>   
-            <h2 ng-show="showEvent.place_name"
-                class="">
-                {{::showEvent.place_name}}
+            <h2 ng-switch="!showEvent.place_name" ng-click="placePressed()">
+                <span ng-switch-when="false">
+                    {{::showEvent.place_name}}
+                    <span ng-if="showEvent.place_lat && showEvent.place_lng">
+                        <i class="ion-map"></i>
+                    </span>
+                </span>
+                <span ng-switch-when="true">
+                    {{'event_place_empty' | translate}}
+                </span>
             </h2>
         </div>
+
 
     </ion-item>
     
     <!-- Event Date / Weather / Place  -->
     <ion-item class="noPadding borderTop cover">
         <div class="buttons row">
-            <div class="col" ng-click="editDate()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
+            <div class="col col-33" ng-click="editDate()">
                 <div ng-switch="!showEvent.date">
                     <span ng-switch-when="true">
                         <i class="ion-ios-clock-outline"></i>
@@ -60,40 +75,30 @@
                     </span>
                     <span ng-switch-when="false">
                         <i class="ion-calendar invisible" ng-class="{'visible': showEvent.date}"></i>
-                        <span id="dayLabel">{{showEvent.date | date: 'd'}}</span>
+                        <span id="dayLabel">{{::showEvent.date_d}}</span>
                         <span class="title">
-                        {{ showEvent.date | prettyDateFormat }}</span>
+                        {{ ::showEvent.prettyDateFormat }}</span>
+                    </span>
+                </div>
+
+                <div ng-if="showEvent.repeatEventType!=0" class="subtitle noWrap">
+                    <i class="ion-loop"></i>
+                    <span ng-switch="showEvent.repeatEventType">
+                        <span ng-switch-when="1" translate="events_date_repeat_day"></span>
+                        <span ng-switch-when="2" translate="events_date_repeat_week"></span>
+                        <span ng-switch-when="3" translate="events_date_repeat_week2"></span>
+                        <span ng-switch-when="4" translate="events_date_repeat_month"></span>
                     </span>
                 </div>
             </div>
-            <div class="col col-25" ng-show="showEvent.date && weather.desc">
-                <div>
+            <div class="col col-33" >
+                <div ng-show="showEvent.date && weather.desc">
                     <img ng-src="{{weather.icon_url}}" ng-alt="weather.desc">
                     <div class="title">{{weather.tempC}}ºC</div>
                     <span class="subtitle"><small>{{weather.desc}}</small></span>
                 </div>
             </div>
-            <div class="col" ng-click="placePressed()" ng-class="{'col-25': showEvent.date && weather.desc, 'col-33': !showEvent.date && !weather.desc}">
-                <div ng-switch="!showEvent.place_name">
-                    <span ng-switch-when="true">
-                        <i class="ion-ios-location-outline"></i>
-                        <span translate="event_place_empty"></span>
-                    </span>
-                    <span ng-switch-when="false">
-                        <span ng-switch="!showEvent.place_lat || !showEvent.place_lng">
-                            <span ng-switch-when="true">
-                                <i class="ion-location"></i>
-                                <span class="title">{{::showEvent.place_name}}</span>
-                            </span>
-                            <span ng-switch-when="false">
-                                <i class="ion-map"></i>
-                                <span class="title" translate="event_place_see_map"></span>
-                            </span>
-                        </span>
-                    </span>
-                </div>
-            </div>
-            <div class="col showClick" ng-click="showParticipants()" ng-class="{'col-25': showEvent.date, 'col-33': !showEvent.date}">
+            <div class="col col-33 showClick" ng-click="showParticipants()">
                 <i class="ion-person-stalker" ng-show="showEvent.totalParticipants"></i>
                 <div class="title larger">{{::showEvent.totalParticipants}}</div>
             </div>
@@ -117,14 +122,7 @@
     </ion-item>
 
     <ion-item class="label borderTop themeBackgroundColor" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()">
-        <span ng-switch="isShowDetailPanel">
-            <span ng-switch-when="true">
-                <i class="ion-android-arrow-dropup"></i>
-            </span>
-            <span ng-switch-when="false">
-                <i class="ion-android-arrow-dropdown"></i>
-            </span>
-        </span>
+        <i class="ion-android-arrow-dropup"></i>
     </ion-item>
 
 </div>

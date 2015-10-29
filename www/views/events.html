@@ -31,7 +31,10 @@
             <h3 class="bottomHalf">{{myEvent.place_name}}</h3>
             <div class="bottom" ng-style="{'bottom': myEvent.place_name?'':'30px'}">
                 <span ng-show="myEvent.date">
-                    <i class="ion-calendar"></i>
+                    <span ng-switch="myEvent.repeatEventType == 0">
+                        <i ng-switch-when="true" class="ion-calendar"></i>
+                        <i ng-switch-when="false" class="ion-loop"></i>
+                    </span>
                     {{myEvent.date | prettyDateFormat }}
                 </span>
                 <span ng-show="myEvent.participants.length>0">

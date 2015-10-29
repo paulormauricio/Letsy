@@ -271,6 +271,8 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
             $scope.background_image_url = 'img/themeIcon/'+$scope.showEvent.theme+'.png';
         }
 
+        $scope.showEvent.prettyDateFormat = $filter('prettyDateFormat')($scope.showEvent.date);
+        $scope.showEvent.date_d = $filter('date')($scope.showEvent.date, 'd');
 
         $scope.weather = {};
         if( !$rootScope.isOffline ) {

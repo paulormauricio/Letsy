@@ -395,18 +395,18 @@ console.log('Event loaded locally: ', doc);
 				isDeleted:	this.myEvent.isDeleted ? true : false
 			};
 
-			if(this.myEvent.name) 			myEvent_temp.name = this.myEvent.name;
-			if(this.myEvent.theme) 			myEvent_temp.theme = this.myEvent.theme;
-			if(this.myEvent.background_url) myEvent_temp.background_url = this.myEvent.background_url;
-			if(this.myEvent.place_id) 		myEvent_temp.place_id = this.myEvent.place_id;
-			if(this.myEvent.place_name) 	myEvent_temp.place_name = this.myEvent.place_name;
-			if(this.myEvent.place_address) 	myEvent_temp.place_address = this.myEvent.place_address;
-			if(this.myEvent.place_image_url) myEvent_temp.place_image_url = this.myEvent.place_image_url;
-			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
-			if(this.myEvent.place_lat) 		myEvent_temp.place_lat = this.myEvent.place_lat;
-			if(this.myEvent.date) 			myEvent_temp.date = this.myEvent.date;
-			if(this.myEvent.repeatEventType)myEvent_temp.repeatEventType = this.myEvent.repeatEventType;
-			if(this.myEvent.createdBy) 		myEvent_temp.createdBy = this.myEvent.createdBy;
+			myEvent_temp.name 			= this.myEvent.name;
+			myEvent_temp.theme 			= this.myEvent.theme;
+			myEvent_temp.background_url = this.myEvent.background_url;
+			myEvent_temp.place_id 		= this.myEvent.place_id;
+			myEvent_temp.place_name 	= this.myEvent.place_name;
+			myEvent_temp.place_address 	= this.myEvent.place_address;
+			myEvent_temp.place_image_url = this.myEvent.place_image_url;
+			myEvent_temp.place_lat 		= this.myEvent.place_lat;
+			myEvent_temp.place_lng 		= this.myEvent.place_lng;
+			myEvent_temp.date 			= this.myEvent.date;
+			myEvent_temp.repeatEventType = this.myEvent.repeatEventType;
+			myEvent_temp.createdBy 		= this.myEvent.createdBy;
 
 			saveEvent.save( myEvent_temp , {
 			  success: function(newEvent) {
@@ -415,7 +415,7 @@ console.log('Event loaded locally: ', doc);
 			  	myEvent_temp.id = newEvent.id;
 				myEvent_temp._id = newEvent.id;
 				myEvent_temp.updatedAt = newEvent.updatedAt;				
-console.log('saved newEvent: ', newEvent);
+// console.log('saved newEvent: ', newEvent);
 
 				//Add to local database
 				updateLocalDB(myEvent_temp);

@@ -305,6 +305,20 @@ h1.title .top {
 	content: #bbb !important;
 }
 
+.headerExtraBar {
+	text-align: center;
+	position: fixed;
+	z-index: 6001;
+	top: 38px;
+	left: 0px;
+	width: 110%;
+	line-height: 0;
+	height: 14px;
+}
+.transparent .headerExtraBar {
+	display: none;
+}
+
 /**** List Styles  ***/
 
 .item .middle {
@@ -455,6 +469,14 @@ a {
 	white-space: normal;
   	line-height: 0.9;
   	height: 17px;
+}
+.buttons .col .subtitle i {
+	font-size: 11px;
+	display: inline;
+	color: #eee;
+	position: relative;
+	top: 1px;
+	margin: 0px;
 }
 
 #dayLabel {
@@ -1056,7 +1078,7 @@ i.edit {
 }
 
 #showEvent .mainPanel .bottom {
-	padding: 50px 0px 25px 15px !important;
+	padding: 50px 0px 15px 15px !important;
 }
 
 #showEvent  .mainPanel .bottom > * {
@@ -1066,6 +1088,20 @@ i.edit {
 
 #showEvent h1, #showEvent h2 {
 	color: white;
+}
+#showEvent h2 {
+	margin-top: 5px;
+	white-space: nowrap;
+	width: 90%;
+	position: relative;
+	padding-bottom: 1px;
+	overflow: visible;
+}
+#showEvent h2 i {
+	font-size: 20px;
+	position: absolute;
+	padding: 10px;
+	bottom: -10px;
 }
 
 #showEvent .cover {
@@ -1483,6 +1519,9 @@ button.action > i {
 	height: auto;
 	min-height: inherit;
 	/*display: inherit;*/
+}
+.noWrap {
+	white-space: nowrap !important;
 }
 
 .noClick.activated {
