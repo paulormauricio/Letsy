@@ -19,7 +19,6 @@ angular.module('letsy.PushServices',[])
     var applicationId = "3JNm1SIMsSFg9dURqfXPon40ttp1lxoE5eQKG2XQ";
 	var clientKey = "OeC50st0M2iByVBzoCBfS6arUJ7mgj4Lb4SMNvN5";
 
-    var device_token = '';
 
 	return {
 
