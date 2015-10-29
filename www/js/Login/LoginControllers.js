@@ -59,7 +59,7 @@ try {
       $scope.isLoginPressed = true;
 
 //alert('chegou ao Login');
-      if (!window.cordova) {
+      if (!window.cordova or true) {
         facebookConnectPlugin.browserInit('1536111309938547');
       }
       facebookConnectPlugin.login(['email, user_friends'], fbLoginSuccess, fbLoginError);
