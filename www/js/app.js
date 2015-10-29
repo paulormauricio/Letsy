@@ -27,7 +27,7 @@ angular.module('letsy',
       'common.GeolocationServices',
       'common.Directives',
       'common.DynamicBackgroundImage',
-      'letsy.IonicServices'
+      'letsy.PushServices'
     ]
   )
 

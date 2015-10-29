@@ -33,6 +33,8 @@
     <param name="APP_NAME" value="Letsy"/>
   </gap:plugin>
 
+  <gap:plugin name="cordova-plugin-pushnotification-parsepushnotification" source="npm" />
+
   <feature name="Keyboard">
       <param name="ios-package" value="IonicKeyboard" onload="true" />
   </feature>

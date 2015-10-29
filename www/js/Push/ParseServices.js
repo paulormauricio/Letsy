@@ -1,4 +1,4 @@
-angular.module('letsy.ParseServices',[])
+angular.module('letsy.PushServices',[])
 
 .factory('PushService',
 	[
@@ -6,88 +6,80 @@ angular.module('letsy.ParseServices',[])
 		'$q', 
 		'$http',
 		'$timeout',
-		'Event', 
+		'ErrorHandler',
 		function(
 			$rootScope, 
 			$q, 
 			$http,
 			$timeout,
-			Event
+			ErrorHandler
 		)
 	{
 
-    var app_id = "3JNm1SIMsSFg9dURqfXPon40ttp1lxoE5eQKG2XQ";
-    var client_key = "OeC50st0M2iByVBzoCBfS6arUJ7mgj4Lb4SMNvN5";
+    var applicationId = "3JNm1SIMsSFg9dURqfXPon40ttp1lxoE5eQKG2XQ";
+	var clientKey = "OeC50st0M2iByVBzoCBfS6arUJ7mgj4Lb4SMNvN5";
 
     var device_token = '';
 
 	return {
 
 		init: function() {
-return;
-			if(window.cordova) {
-try {
-alert('parsePlugin exists? ' + ParsePushPlugin);
-				if( ParsePushPlugin ) {
-					
-					alert('Parse: before subscribe()');
 
-				    ParsePushPlugin.subscribe('SampleChannel', function() {
-				    	alert('Parse: after subscribe()');
+			if( window.parsepushnotification ) {
+				alert('Entrou no parsepushnotification!');
 
-				        ParsePushPlugin.getInstallationId(function(id) {
-				        	alert('Parse: after getInstallationId() = ' + id);
-				            /**
-				             * Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
-				             * 
-				             var install_data = {
-				                installation_id: id,
-				                channels: ['SampleChannel']
-				             }
-				             *
-				             */
+				window.parsepushnotification.setUp(applicationId, clientKey);
 
-				        }, function(error) {
-				            ErrorHandler.error('ParseServices', 'init() -> getInstallationId()',error);
-				        });
+				//registerAsPushNotificationClient callback (called after setUp) 
+				window.parsepushnotification.onRegisterAsPushNotificationClientSucceeded = function() {
+			        alert('onRegisterAsPushNotificationClientSucceeded');
+			    };
 
-				    }, function(error) {
-				        ErrorHandler.error('ParseServices', 'init() -> subscribe()',error);
-				    });
+			    window.parsepushnotification.onRegisterAsPushNotificationClientFailed = function() {
+			        alert('onRegisterAsPushNotificationClientFailed');
+			    };
 
-}
-catch(err) {
-    alert( 'Parse init Error: '+err.message);
-}
-				}
+			    //subscribe callback 
+			    window.parsepushnotification.onSubscribeToChannelSucceeded = function() {
+			        alert('onSubscribeToChannelSucceeded');
+			    };
+
+			    window.parsepushnotification.onSubscribeToChannelFailed = function() {
+			        alert('onSubscribeToChannelFailed');
+			    };  
+
+			    //unsubscribe callback 
+			    window.parsepushnotification.onUnsubscribeSucceeded = function() {
+			        alert('onUnsubscribeSucceeded');
+			    };
+			    window.parsepushnotification.onUnsubscribeFailed = function() {
+			        alert('onUnsubscribeFailed');
+			    };  
 			}
 
 		},
 
-		newChannel: function(channel) {
-			alert('New channel function');
+		subscribeToChannel: function(channel) {
+			window.parsepushnotification.subscribeToChannel('Teste');
+			alert('Subscribe to channel: ' + channel);
 		},
 
-		deleteChannel: function(channel) {
-			ParsePushPlugin.unsubscribe('SampleChannel', function(msg) {
-		        console.log('Channel unsubscribed: ', channel);
-		    }, function(error) {
-		        ErrorHandler.error('ParseServices', 'PushService.deleteChannel()',error.message);
-		    });
+		unsubscribeToChannel: function(channel) {
+			window.parsepushnotification.unsubscribe('Teste');
+			alert('Unsubscribe to channel: ' + channel);
 		},
 
-		send: function(channel, message) {
-return;
-			//var oneDay = new Date();
+		send: function(channels, tokens, msg, payload) {
 
 			Parse.Push.send({
-			  channels: [ channel ],
+			  channels: channels,
 			  data: {
 			    //action: '',
 			    //expiration_time: oneDay,
-			    alert: message,
+			    alert: msg,
 			    badge: 'Increment',
-			    title: "New message"
+			    title: message,
+			    payload: angular.toJson(payload)
 			  }
 			}, {
 			  success: function() {

@@ -1,4 +1,4 @@
-angular.module('letsy.IonicServices',[])
+angular.module('letsy.PushServices',[])
 
 .factory('PushService',
 	[
@@ -113,7 +113,13 @@ angular.module('letsy.IonicServices',[])
 
 		},
 
-		send: function(tokens, msg, payload) {
+		subscribeToChannel: function(channel) {
+		},
+
+		unsubscribeToChannel: function(channel) {
+		},
+
+		send: function(channels, tokens, msg, payload) {
 
 			if( alert == undefined || tokens === undefined || tokens.length == 0) {
 				return;

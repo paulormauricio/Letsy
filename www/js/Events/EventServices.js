@@ -525,7 +525,7 @@ console.log('saved newEvent: ', newEvent);
 
 }])
 
-.factory('Participant',['$rootScope', '$q', 'Event', 'ErrorHandler', function($rootScope, $q, Event, ErrorHandler){
+.factory('Participant',['$rootScope', '$q', 'Event', 'ErrorHandler', 'PushService', function($rootScope, $q, Event, ErrorHandler, PushService){
 
 	var Participant = Parse.Object.extend("Participant");
 	var Event = Parse.Object.extend("Event");
@@ -653,6 +653,8 @@ console.log('saveEvent before store Participant:', saveEvent);
 		            participant.set('isHidden', false);
 
 					participant.save();
+
+					if(isGoing) PushService.subscribeToChannel(Event.myEvent.id);
 			  	}
 			  	else {
 			  		console.log('Warning: Participant not found! ', participant);
@@ -667,13 +669,14 @@ console.log('saveEvent before store Participant:', saveEvent);
 			return deferred.promise;
 		},
 
-		delete: function (participantId) {
+		delete: function (participantId, eventId) {
 			console.log('Participant.delete: ', participantId);
 			var participant = new Participant();
 			participant.id = participantId;
 			participant.destroy({
 				success: function(myObject) {
 					console.log('Participant removed :', participantId);
+					if(eventId) PushService.unsubscribeToChannel(eventId);
 				},
 				error: function(myObject, error) {
 			    	ErrorHandler.error('EventServices', 'Participant.delete()',error);

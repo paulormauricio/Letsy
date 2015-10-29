@@ -151,7 +151,7 @@ angular.module('letsy.ChatServices',['firebase'])
 		console.log('Send Chat: ', newChat);
 		console.log('Send Chat with payload: ', payload);
 
-		PushService.send(tokens, message, payload);
+		PushService.send([eventID], tokens, message, payload);
 
 		return this.save(newChat);
 	}

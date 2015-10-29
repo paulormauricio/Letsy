@@ -131,7 +131,7 @@ console.log('<---------- Refresh events ----------->');
         }).then(function(result) {
             $ionicListDelegate.$getByHandle('newEventsList').closeOptionButtons();
             if(result) {
-                Participant.delete($scope.newEvents[index].participantId);
+                Participant.delete($scope.newEvents[index].participantId, $scope.newEvents[index].id);
                 $scope.newEvents.splice(index, 1);
                 $ionicLoading.show({
                     templateUrl : 'views/templateDestroyFeedback.html',
@@ -449,7 +449,7 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
 
                 for (var i = 0; i < $scope.showEvent.participants_all.length; i++) {
                     if( $scope.showEvent.participants_all[i].id === Parse.User.current().id ) {
-                        Participant.delete($scope.showEvent.participants_all[i].participantId);
+                        Participant.delete($scope.showEvent.participants_all[i].participantId, $scope.showEvent.id);
                         break;
                     }
                 };
@@ -683,7 +683,7 @@ console.log('Event.myEvent: ', Event.myEvent);
                     }
                     if( notify_tokens.length > 0 ) {
                         push_message = Event.myEvent.name+' '+$filter('translate')('event_push_canceled');
-                        PushService.send(notify_tokens, push_message, payload);
+                        PushService.send([Event.myEvent.id], notify_tokens, push_message, payload);
                     }
                     $state.go('events');
                 }).catch(function(error){
@@ -1088,13 +1088,13 @@ console.log('Event.myEvent after save: ', savedEvent);
         };
         if( notify_tokens.length > 0 ) {
             push_message = $filter('translate')('event_push_invite') + Event.myEvent.name;
-            PushService.send(notify_tokens, push_message, payload);
+            PushService.send([Event.myEvent.id], notify_tokens, push_message, payload);
         }
 
         notify_tokens = [];
         for (var i=0; i<$scope.friends.length; i++) {
             if($scope.friends[i].isNew == 0) {
-                Participant.delete(Event.myEvent, $scope.friends[i], false);
+                Participant.delete($scope.friends[i].participantId);
             }
             else {
                 break;
@@ -1102,7 +1102,7 @@ console.log('Event.myEvent after save: ', savedEvent);
         };
         if( notify_tokens.length > 0 ) {
             push_message = Event.myEvent.name + $filter('translate')('event_push_uninvite');
-            PushService.send(notify_tokens, push_message);
+            PushService.send([Event.myEvent], notify_tokens, push_message);
         }
     }
 
@@ -1660,7 +1660,7 @@ console.log('Event.myEvent: ', Event.myEvent);
 
     function calculateScreenSize() {
         $scope.scroll = {
-                height: ($window.innerHeight-373),
+                height: $window.innerHeight - 373,
                 width:  $window.innerWidth
             };
     }
