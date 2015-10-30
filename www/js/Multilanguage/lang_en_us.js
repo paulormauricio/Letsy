@@ -11,6 +11,8 @@ angular.module('letsy.lang_en_us', [])
 	chat_room: 'Chat room',
 	chat_send: 'Send',
 
+	detail: 'More detail',
+
 	date_select: 'Select day',
 	date_day: 'Day',
 	date_hour: 'Hour',
@@ -117,6 +119,7 @@ angular.module('letsy.lang_en_us', [])
 	logout: 'Logout',
 	logout_confirm: '<small>This operation will remove your personal data from this device and your chat history will be lost!</small>',
 	of: 'of',
+	openBrowser: 'Open in browser',
 	open_now: 'Open now',
 	profile_title: 'My profile',
 	refresh: 'Refresh',

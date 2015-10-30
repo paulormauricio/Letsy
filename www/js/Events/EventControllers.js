@@ -1234,6 +1234,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 
         if( callback.item.place_id != '-1' ) {
             Event.myEvent.place_id = callback.item.place_id;
+            Event.myEvent.place_reference = callback.item.reference;
             Event.myEvent.place_address = callback.item.vicinity;
 
             if( callback.item.geometry.location ) {
@@ -1268,6 +1269,7 @@ console.log('showEvent: ', Event.showEvent);
             '$stateParams',
             '$ionicLoading', 
             '$ionicActionSheet',
+            'ngGPlacesAPI',
             'userlocation',
             'ErrorHandler',
             function(
@@ -1279,6 +1281,7 @@ console.log('showEvent: ', Event.showEvent);
                 $stateParams,
                 $ionicLoading,
                 $ionicActionSheet,
+                ngGPlacesAPI,
                 userlocation,
                 ErrorHandler
             )
@@ -1288,7 +1291,7 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-    if($stateParams.objectId=''){
+    if($stateParams.objectId==''){
         $state.go('events');
     }
     else if(!Event.showEvent) {
@@ -1297,7 +1300,21 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
     $scope.showEvent = Event.showEvent;
 
-    if( !$scope.showEvent.place_id ) {
+    $scope.place = {
+        id: Event.showEvent.placeId,
+        place_address: Event.showEvent.place_address,
+        place_lat: Event.showEvent.place_lat,
+        place_lng: Event.showEvent.place_lng
+    }
+
+
+    if( $stateParams.placeReference ) {
+        console.log('Edit Place Map Detail');
+
+        loadPlaceDetails( $stateParams.placeReference );
+
+    }
+    else if( !$scope.showEvent.place_id ) {
 
         Event.get($stateParams.objectId).then(function(object) {
             if(object == undefined ) {
@@ -1305,20 +1322,57 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
             }
             else {
                 $scope.showEvent = object;
-                initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
+                loadPlaceDetails( object.place_reference );
             }
         })
-        .catch(function(fallback) {
-            alert('Get Event Error: '+fallback);
+        .catch(function(error) {
+            ErrorHandler.error('EventShowMapController', 'Event.get()', error);
         })
         .finally( function() {
             $ionicLoading.hide();
         });
     }
     else {
+        loadPlaceDetails( $scope.showEvent.place_reference );
+    }
 
-        initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
-        $ionicLoading.hide();
+    function loadPlaceDetails(place_reference) {
+        ngGPlacesAPI.placeDetails({reference: place_reference}).then(function (data) {
+            
+            $scope.place = {
+                id:                 data.place_id,
+                name:               data.name,
+                place_address:      data.formatted_address,
+                phone:              data.formatted_phone_number,
+                place_lat:          data.geometry.location.lat(),
+                place_lng:          data.geometry.location.lng(),
+                website:            data.website,
+                photo_reference:    data.photo_reference,
+                icon:               data.icon,
+                rating:             data.rating
+            };
+
+            console.log('Place details: ', $scope.place);
+
+            initializeGoogleMaps($scope.place.place_lat, $scope.place.place_lng);
+
+        })
+        .catch(function(error) {
+            ErrorHandler.error('EventShowMapController', 'ngGPlacesAPI.placeDetails()', error);
+        })
+        .finally(function() {
+            $ionicLoading.hide();
+        });
+    }
+
+    $scope.back = function() {
+        if( $stateParams.placeReference ) {
+            document.getElementById("autocomplete-container").className = "ion-autocomplete-container modal slow";
+            $state.go('editEventPlace', {objectId: $scope.showEvent.id});
+        }
+        else {
+            $state.go('showEvent', {objectId: $scope.showEvent.id});
+        }
     }
 
     function initializeGoogleMaps(lat, lng) {
@@ -1336,7 +1390,6 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
         }
         // if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
 
-    try {
         var myLatlng = new google.maps.LatLng(lat,lng);
 
         // Create an array of styles.
@@ -1387,11 +1440,6 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
             animation: google.maps.Animation.DROP,
             title: 'Place!'
         });
-    }
-    catch(err) {
-        console.log('Maps Error: ',err);
-        alert( 'Maps Error: '+err.message);
-    }
 
     }
 
@@ -1665,6 +1713,31 @@ console.log('Event.myEvent: ', Event.myEvent);
                 height: $window.innerHeight - 373,
                 width:  $window.innerWidth
             };
+    }
+
+}])
+
+
+.controller('EventSearchTemplateController',
+        [
+            '$scope',
+            '$stateParams',
+            '$state',
+            'ErrorHandler',
+            function(
+                $scope,
+                $stateParams,
+                $state,
+                ErrorHandler
+            )
+    {
+
+    $scope.hideSearchContainer = function(reference) {
+
+        var className = document.getElementById("autocomplete-container").className;
+        document.getElementById("autocomplete-container").className = className + " hidden";
+
+        $state.go('showEventMap', {objectId: $stateParams.objectId, placeReference: reference});
     }
 
 }]);

@@ -34,7 +34,7 @@
             </p>
 
             <span ng-hide="true" style="font-size: 10px" class="item-note {{place.opening_hours.open_now ? '' : 'assertive' }}" translate="{{place.opening_hours.open_now ? 'open_now' : 'closed_now'}}"></span>
-            <i class="icon ion-information-circled larger calm"></i>
+            <i class="icon ion-information-circled larger calm" ui-sref="showEventMap({objectId: editEvent.id, placeReference: place.reference})" ng-click="$event.stopPropagation()"></i>
         </ion-item>
     </ion-list>
 

@@ -98,6 +98,10 @@ body > * {
 	height: 100%;
 }
 
+h1.title {
+	font-size: 14px !important;
+}
+
 h1.title img {
 	height: 30px;
 	margin: 10px 0px;
@@ -216,35 +220,39 @@ h1.title img {
 /* Google Maps */
 
 #addressInfo {
-	position: absolute;
-	z-index: 5000;
-	right: 15px;
-	top: 30px;
-	left: auto;
-	background-color: rgba(255, 255, 255, .8);
-	color: #000 !important;
-	width: 100px;
-	border-radius: 7px;
+	color: #444;
+	text-align: left;
+	padding: 15px 16px 0px;
+	background-color: white;
 }
-#addressInfo.bottom {
-	top: auto;
-	bottom: 30px;
-	right: 30px;
+#addressInfo .subtitle {
+	color: #666;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 5px 1px 5px;
+	text-align: left;
+	margin-bottom: 5px;
+}
+#addressInfo .body {
+	font-size: 12px;
+	padding: 5px 1px;
+}
+#addressInfo .item-divider {
+	margin: 15px -16px;
+	border: 0px;
+	min-height: 10px;
+	padding: 0px;
 }
 
-#addressInfo .info {
-	font-size: 12px;
-	height: 70px;
-	padding: 3px 10px;
+#addressInfo .body i {
+	font-size: 20px;
+	position: relative;
+	top: 3px;
+	margin-right: 10px;
+	display: inline-block;
 }
-#addressInfo p {
-	line-height: 1.0;
-	padding: 5px 0px;
-	text-align: left;
-	color: #000;
-	font-size: 10px;
-	white-space: normal;
-}
+
+
 .mapContainer {
 	position: relative;
 	text-align: center;
@@ -1104,7 +1112,7 @@ i.edit {
 	font-size: 20px;
 	position: absolute;
 	padding: 10px;
-	bottom: -10px;
+	bottom: -12px;
 }
 
 #showEvent .cover {
@@ -1503,6 +1511,10 @@ button.action > i {
 
 .padding {
 	padding: .5em;
+}
+.space {
+	width: 5px;
+	display: inline-block;
 }
 
 .greyBackground {

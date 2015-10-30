@@ -1,4 +1,4 @@
-<div class="ion-autocomplete-container modal">
+<div class="ion-autocomplete-container modal slow" id="autocomplete-container" >
      <div class="bar bar-header item-input-inset themeBackgroundColor">
           <label class="item-input-wrapper darken">
                <i class="icon ion-search placeholder-icon"></i>
@@ -8,7 +8,7 @@
                {{cancelLabel}}
           </button>
      </div>
-     <ion-content class="has-header has-header">
+     <ion-content class="has-header has-header" ng-controller="EventSearchTemplateController">
           <ion-list>
 
                <ion-item ng-hide="searchQuery.length<3" class="item-avatar item-square" ng-click="selectItem({name: searchQuery, place_id: '-1'})">
@@ -28,7 +28,7 @@
                          <label class="smaller">{{place.vicinity}}</label>
                     </p>
 
-                    <i class="icon ion-information-circled larger calm"></i>
+                    <i class="icon ion-information-circled larger calm" ng-click="hideSearchContainer(place.reference); $event.stopPropagation()"></i>
                     
                </ion-item>
           </ion-list>

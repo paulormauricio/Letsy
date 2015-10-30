@@ -7,6 +7,7 @@ angular.module('letsy',
       'ionic.service.push',
       'ion-autocomplete',
       'ionic-pullup',
+      'jett.ionic.filter.bar',
       'ionic-datepicker',
       'ngGPlaces',
       'monospaced.elastic',
@@ -203,7 +204,7 @@ angular.module('letsy',
       }
     })
     .state('showEventMap',{
-      url:'/event/:objectId/map',
+      url:'/event/:objectId/map/:placeReference',
       controller:'EventShowMapController',
       templateUrl:'views/showEventMap.html',
       cache: false,

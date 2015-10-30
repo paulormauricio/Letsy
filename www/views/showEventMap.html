@@ -1,5 +1,5 @@
 <ion-header-bar class="bar-positive themeBackgroundColor">
-        <button class="button button-clear" ui-sref="showEvent({objectId: showEvent.id})">
+        <button class="button button-clear" ng-click="back()">
           <i class="icon ion-ios-arrow-back"></i>
         </button>
         <h1 class="title" translate="event_map"></h1>
@@ -7,33 +7,47 @@
 
 <ion-view ng-style="{'width': item.width, 'height': item.height}">
 
-  <table id="addressInfo" ng-show="showEvent.place_address" class="bottom">
-  <tr>
-      <td class="info">
-          <p class="bold" translate="event_place_address">Address</p>
-          <p>{{ ::showEvent.place_address }}</p>
-      </td>
-  </tr>
-  </table>
   <div id="fullMap" class="" data-tap-disabled="true"></div>
 
 
-  <ion-pull-up-footer class="bar-stable" initial-state="minimized" default-behavior="hide">
-      <div class="title" ion-pull-up-trigger>More details</div>
-      <ion-pull-up-handle width="100" height="25" toggle="ion-chevron-down ion-chevron-up" style="border-radius: 25px 25px 0 0">
+  <ion-pull-up-footer class="bar-stable" max-height="400">
+      <ion-pull-up-handle width="100" height="25" toggle="ion-chevron-up ion-chevron-down" style="border-radius: 20px 20px 0 0">
           <i class="icon ion-chevron-up"></i>
       </ion-pull-up-handle>
+      <ion-pull-up-bar>
+          <h1 class="title small" style="text-align: left" ion-pull-up-trigger>
+            {{ ::place.name }}
+          </h1>
+          <button ng-if="place.rating" class="button button-clear">
+            {{ ::place.rating }}<small>/5</small>
+          </button>
+      </ion-pull-up-bar>
+      <ion-pull-up-content scroll="false" id="addressInfo">
 
-      <ion-pull-up-content scroll="false">
-          <div class="list card">
-              <div class="item item-divider">Recent Updates</div>
-              <div class="item item-body">
-                  <div>
-                      There is a fire in <b>sector 3</b>
-                  </div>
-              </div>
-          </div>
+        <div class="subtitle" translate="event_place_address"></div>
+        <div class="body">
+          {{ ::place.place_address }}
+        </div>
+        
+        <ion-item class="item-divider"></ion-item>
+
+        <div class="body" ng-if="place.phone">
+          <a href="tel:{{::place.phone}}">
+            <i class="icon ion-ios-telephone"></i>
+            {{ ::place.phone }}
+          </a>
+        </div>
+        <div class="body" ng-if="place.website">
+          <a ng-href="{{::place.website}}" target="_blank">
+            <i class="icon ion-earth"></i>
+            {{ 'openBrowser' | translate }}
+          </a>
+        </div>
+        
+        <ion-item class="item-divider"></ion-item>
+
       </ion-pull-up-content>
   </ion-pull-up-footer>
+
 
 </ion-view>

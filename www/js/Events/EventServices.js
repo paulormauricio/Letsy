@@ -163,6 +163,7 @@ console.log('----->  Database change: ', change);
 				result.theme = object.get('Event').get('theme');
 				result.background_url = object.get('Event').get('background_url');
 				result.place_id = object.get('Event').get('place_id');
+				result.place_reference = object.get('Event').get('place_reference');
 				result.place_name = object.get('Event').get('place_name');
 				result.place_address = object.get('Event').get('place_address');
 				result.place_image_url = object.get('Event').get('place_image_url');
@@ -267,6 +268,7 @@ console.log('----->  Database change: ', change);
 				result.theme = object.get('Event').get('theme');
 				result.background_url = object.get('Event').get('background_url');
 				result.place_id = object.get('Event').get('place_id');
+				result.place_reference = object.get('Event').get('place_reference');
 				result.place_name = object.get('Event').get('place_name');
 				result.place_address = object.get('Event').get('place_address');
 				result.place_image_url = object.get('Event').get('place_image_url');
@@ -344,6 +346,7 @@ console.log('Event loaded locally: ', doc);
 				result.theme = object.get('theme');
 				result.background_url = object.get('background_url');
 				result.place_id = object.get('place_id');
+				result.place_reference = object.get('place_reference');
 				result.place_name = object.get('place_name');
 				result.place_address = object.get('place_address');
 				result.place_image_url = object.get('place_image_url');
@@ -385,30 +388,59 @@ console.log('Event loaded locally: ', doc);
 			var saveEvent = new Event();
 
 			if(isNew) {
-				this.myEvent.createdBy = Parse.User.current().id;
+				saveEvent.set('createdBy', Parse.User.current().id);
 			}
 			else {
 				saveEvent.id = this.myEvent.id;
 			}
-			var myEvent_temp = {
-				// id: 	this.myEvent.id,
-				isDeleted:	this.myEvent.isDeleted ? true : false
-			};
+			var myEvent_temp = copyEvent(this.myEvent);
 
-			myEvent_temp.name 			= this.myEvent.name;
-			myEvent_temp.theme 			= this.myEvent.theme;
-			myEvent_temp.background_url = this.myEvent.background_url;
-			myEvent_temp.place_id 		= this.myEvent.place_id;
-			myEvent_temp.place_name 	= this.myEvent.place_name;
-			myEvent_temp.place_address 	= this.myEvent.place_address;
-			myEvent_temp.place_image_url = this.myEvent.place_image_url;
-			myEvent_temp.place_lat 		= this.myEvent.place_lat;
-			myEvent_temp.place_lng 		= this.myEvent.place_lng;
-			myEvent_temp.date 			= this.myEvent.date;
-			myEvent_temp.repeatEventType = this.myEvent.repeatEventType;
-			myEvent_temp.createdBy 		= this.myEvent.createdBy;
+			saveEvent.set('name', this.myEvent.name);
+			saveEvent.set('theme', this.myEvent.theme);
+			
+			if(this.myEvent.background_url) saveEvent.set('background_url', this.myEvent.background_url);
+			else saveEvent.unset('background_url');
 
-			saveEvent.save( myEvent_temp , {
+			if(this.myEvent.place_id) {
+				saveEvent.set('place_id', this.myEvent.place_id);
+				saveEvent.set('place_reference', this.myEvent.place_reference);
+			}
+			else {
+				saveEvent.unset('place_id');
+				saveEvent.unset('place_reference');
+			}
+
+			if(this.myEvent.place_name) saveEvent.set('place_name', this.myEvent.place_name);
+			else saveEvent.unset('place_name');
+
+			if(this.myEvent.place_lat) {
+				saveEvent.set('place_lat', this.myEvent.place_lat);
+				saveEvent.set('place_lng', this.myEvent.place_lng);
+			}
+			else {
+				saveEvent.unset('place_lat');
+				saveEvent.unset('place_lng');
+			}
+
+			if(this.myEvent.place_address) saveEvent.set('place_address', this.myEvent.place_address);
+			else saveEvent.unset('place_address');
+			
+			if(this.myEvent.place_image_url) saveEvent.set('place_image_url', this.myEvent.place_image_url);
+			else saveEvent.unset('place_image_url');
+			
+			if(this.myEvent.date) {
+				saveEvent.set('date', this.myEvent.date);
+				saveEvent.set('repeatEventType', this.myEvent.repeatEventType);
+			}
+			else {
+				saveEvent.unset('date');
+				saveEvent.set('repeatEventType', 0);
+			}
+
+			saveEvent.set('createdBy', this.myEvent.createdBy);
+			saveEvent.set('isDeleted', this.myEvent.isDeleted ? true : false);
+
+			saveEvent.save( null , {
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');
 
@@ -438,6 +470,7 @@ console.log('Event loaded locally: ', doc);
 			background_url: myEvent.background_url,
 
 			place_id: 		myEvent.place_id,
+			place_id: 		myEvent.place_reference,
 			place_name: 	myEvent.place_name,
 			place_address: 	myEvent.place_address,
 			place_image_url:myEvent.place_image_url,
@@ -517,6 +550,7 @@ console.log('Event loaded locally: ', doc);
 
 	this.deletePlace = function() {
 		this.myEvent.place_id = undefined;
+		this.myEvent.place_reference = undefined;
 		this.myEvent.place_name = undefined;
 		this.myEvent.place_address = undefined;
 		this.myEvent.place_lat = undefined;

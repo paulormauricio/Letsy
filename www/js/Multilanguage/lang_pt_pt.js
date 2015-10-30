@@ -11,6 +11,8 @@ angular.module('letsy.lang_pt_pt', [])
 	chat_room: 'Chat room',
 	chat_send: 'Enviar',
 
+	detail: 'Mais informação',
+
 	date_select: 'Escolher dia',
 	date_day: 'Dia',
 	date_hour: 'Hora',
@@ -87,7 +89,7 @@ angular.module('letsy.lang_pt_pt', [])
 	event_newEvents_title: 'Convites',
 	event_opened: 'Evento aberto!',
 	event_place_address: 'Morada',
-	event_place_clear: "Limpar local do evento",
+	event_place_clear: "Remover local",
 	event_place_empty: 'Local por definir',
 	event_place_details: 'Detalhe do local',
 	event_place_edit: "Editar local",
@@ -117,6 +119,7 @@ angular.module('letsy.lang_pt_pt', [])
 	logout: 'Terminar sessão',
 	logout_confirm: '<small>Ao terminar a sessão, todos os teus dados pessoais serão apagados deste dispositivo e o histórico do chat será eliminado!</small>',
 	of: 'de',
+	openBrowser: 'Abrir no browser',
 	open_now: 'Aberto agora',
 	profile_title: 'Perfil',
 	refresh: 'Actualizar',
