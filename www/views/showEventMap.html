@@ -38,7 +38,7 @@
           </a>
         </div>
         <div class="body" ng-if="place.website">
-          <a ng-href="{{::place.website}}" target="_blank">
+          <a ng-click="openInBrowser(place.website)">
             <i class="icon ion-earth"></i>
             {{ 'openBrowser' | translate }}
           </a>

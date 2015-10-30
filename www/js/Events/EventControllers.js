@@ -1375,6 +1375,14 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
         }
     }
 
+    $scope.openInBrowser = function(url) {
+        if( window.cordova ) {
+            cordova.InAppBrowser.open(url, '_system', 'location=yes');
+        }
+        else
+            window.open(url, '_blank');
+    }
+
     function initializeGoogleMaps(lat, lng) {
 
         if( $rootScope.isOffline ) {

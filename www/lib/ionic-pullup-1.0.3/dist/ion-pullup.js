@@ -136,6 +136,8 @@ angular.module('ionic-pullup', [])
                   e.gesture.srcEvent.preventDefault();
                   e.gesture.preventDefault();
 
+console.log('e.gesture: ', e.gesture);
+
                   switch (e.type) {
                       case 'dragstart':
                           $element.css('transition', 'none');
@@ -147,7 +149,16 @@ angular.module('ionic-pullup', [])
                           break;
                       case 'dragend':
                           $element.css({'transition': '300ms ease-in-out'});
-                          footer.lastPosY = footer.posY;
+
+                          if (e.gesture.velocityY > 0.3 && e.gesture.direction == 'up') {
+                            expand();
+                          }
+                          else if (e.gesture.velocityY > 0.3 && e.gesture.direction == 'down') {
+                            collapse();
+                          }
+                          else {
+                            footer.lastPosY = footer.posY;
+                          }
                           break;
                   }
               };
