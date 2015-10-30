@@ -17,7 +17,7 @@
   <gap:plugin name="org.apache.cordova.console" version="0.2.11" />
   <gap:plugin name="org.apache.cordova.device" version="0.2.12" />
   <gap:plugin name="org.apache.cordova.splashscreen" version="0.3.4" />
-  <gap:plugin name="org.apache.cordova.inappbrowser" version="0.5.2" />
+  <gap:plugin name="cordova-plugin-inappbrowser" source="npm" />
 
   <gap:plugin name="com.ionic.keyboard" version="1.0.3" />
   <gap:plugin name="org.apache.cordova.geolocation" version="0.3.10"/>

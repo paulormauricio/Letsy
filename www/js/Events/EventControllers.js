@@ -260,7 +260,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
         $scope.showEvent = Event.showEvent;
         console.log('$scope.showEvent: ', $scope.showEvent);
-console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url);
+
         if($scope.showEvent.background_url) {
             $scope.background_image_url = $scope.showEvent.background_url;
         }
@@ -326,7 +326,7 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
 
     function loadChat() {
         Chat.loadChats($stateParams.objectId).then(function(chats) {
-            console.log('chats: ', chats);
+            // console.log('chats: ', chats);
             $scope.chats = chats;
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
         })
@@ -382,12 +382,9 @@ console.log('$scope.showEvent.background_url: ',$scope.showEvent.background_url)
     }
 
     function getWeather(location) {
-        console.log('<<<--- Get weather --->>>');
-        console.log('location: ', location);
         
         Weather.get($scope.showEvent.date, location).then( function(data) {
             $scope.weather = data;
-            console.log('weather: ', $scope.weather);
         })
         .catch(function(error) {
             ErrorHandler.error('EventShowController', 'getWeather()',error);
