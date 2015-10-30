@@ -57,6 +57,9 @@ body > * {
 .popup-body {
 	overflow: hidden;
 }
+.popup-buttons .button {
+	font-size: 14px;
+}
 .date_selected {
 	border-radius: 3px;
 }

@@ -39,7 +39,7 @@ console.log('<------ Start Events ----------->');
 	    if (_myEvents.length == 0) {
 	    	console.log('Load MyEvents from local storage');
 	    	var currDate = $filter('date')(new Date(), 'yyyy-MM-dd' );
-
+	    	
 	       return $q.when(_db.createIndex({
 					index: {fields: ['date', 'isDeleted']}
 				})
@@ -430,10 +430,27 @@ console.log('Event loaded locally: ', doc);
 			return deferred.promise;
 		};
 
-	function myDeltaFunction(doc) {
-		doc.counter = doc.counter || 0;
-		doc.counter++;
-		return doc;
+	function copyEvent(myEvent) {
+		return {
+			id: 			myEvent._id,
+			name: 			myEvent.name,
+			theme: 			myEvent.theme,
+			background_url: myEvent.background_url,
+
+			place_id: 		myEvent.place_id,
+			place_name: 	myEvent.place_name,
+			place_address: 	myEvent.place_address,
+			place_image_url:myEvent.place_image_url,
+			place_lat: 		myEvent.place_lat,
+			place_lng: 		myEvent.place_lng,
+
+			date: 			$filter('date')(myEvent.date, 'yyyy-MM-dd HH:mm'),
+			repeatEventType:myEvent.repeatEventType,
+			createdBy: 		myEvent.createdBy,
+			updatedAt: 		myEvent.updatedAt,
+			isDeleted: 		myEvent.isDeleted ? true : false,
+			participants: 	myEvent.participants
+		};
 	}
 
 	this.updateEventLocally = function(myEvent) {
@@ -451,7 +468,9 @@ console.log('Event loaded locally: ', doc);
 					// Serialize participants
 					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-					_db.upsert(myEvent.id, myDeltaFunction).then(function (res) {
+					_db.upsert(myEvent.id, function(doc){
+						return copyEvent(myEvent);
+					}).then(function (res) {
 						console.log('update event: ', res);
 					}).catch(function(error){
 						ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Update doc',{error: error, object: myEvent});
@@ -468,7 +487,9 @@ console.log('Event loaded locally: ', doc);
 					console.log('Document not found in local DB');
 					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-					_db.upsert(myEvent.id, myDeltaFunction).then(function (res) {
+					_db.upsert(myEvent.id, function(doc){
+						return copyEvent(myEvent);
+					}).then(function (res) {
 						console.log('Put new event: ', res);
 					}).catch(function(error){
 						ErrorHandler.error('EventServices', 'Event.updateEventLocally() -> Put new doc',{error: error, object: myEvent});

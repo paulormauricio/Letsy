@@ -47,7 +47,7 @@ angular.module('letsy.PushServices',[])
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
 		//alert("Successfully registered token " + data.token);
-		console.log('Ionic Push: Got token ', data.token, data.platform);
+		// console.log('Ionic Push: Got token ', data.token, data.platform);
 		$rootScope.myToken = data.token;
 
 		ErrorHandler.debug('PushService', 'PushService.$cordovaPush:tokenReceived',data);
@@ -66,7 +66,7 @@ angular.module('letsy.PushServices',[])
  
 			if(!Parse.User.current()) return;
 
-		    console.log('Ionic User: Identifying with Ionic User service');
+		    // console.log('Ionic User: Identifying with Ionic User service');
 
 		    var user = $ionicUser.get();
 		    if(!user.user_id) {
@@ -86,7 +86,7 @@ angular.module('letsy.PushServices',[])
 		      
 				//alert('Identified user ' + user.name + '\n ID ' + user.user_id);
 
-				console.log('Ionic Push: Registering user');
+				// console.log('Ionic Push: Registering user');
 
 				// Register with the Ionic Push service.  All parameters are optional.
 				$ionicPush.register({

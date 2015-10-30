@@ -47,6 +47,10 @@
   
   <allow-navigation href="*" />
 
+  <platform name="ios">
+    <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
+  </platform>
+
   <preference name="CameraUsesGeolocation" value="false" />
   <preference name="permissions" value="none"/>
   <preference name="orientation" value="portrait"/>

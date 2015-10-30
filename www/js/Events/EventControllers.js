@@ -1626,7 +1626,7 @@ console.log('Event.myEvent: ', Event.myEvent);
             console.log('$scope.editEvent.repeatEventType: ', $scope.editEvent.repeatEventType);
             Event.myEvent.date = new Date(
                 selectedDate.getFullYear(),
-                selectedDate.getMonth()-1,
+                selectedDate.getMonth(),
                 selectedDay,
                 selectedHour,
                 selectedMinute,
