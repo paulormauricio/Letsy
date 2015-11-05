@@ -1,4 +1,4 @@
-angular.module('letsy.ChatServices',['firebase'])
+angular.module('letsy.ChatServices',['letsy.FirebaseServices'])
 
 
 .service('Chat',
@@ -7,7 +7,7 @@ angular.module('letsy.ChatServices',['firebase'])
 		'$q', 
 		'$timeout', 
 		'$filter', 
-		'$firebase',
+		'Firebase',
 		'ErrorHandler', 
 		'PushService',
 		function(
@@ -15,7 +15,7 @@ angular.module('letsy.ChatServices',['firebase'])
 			$q, 
 			$timeout, 
 			$filter, 
-			$firebase,
+			Firebase,
 			ErrorHandler,
 			PushService
 		)
@@ -25,7 +25,7 @@ angular.module('letsy.ChatServices',['firebase'])
 	var _db = new PouchDB('chats', {adapter: 'websql'});
 	var _myChats = [];
 
-	//var firechat = new Firebase("https://letsyapp.firebaseio.com/chats");
+	if(Parse.User.current()) Firebase.init(Parse.User.current().id, Parse.User.current().id);
 
 	this.loadChats = function(eventID) {
 
@@ -71,8 +71,17 @@ angular.module('letsy.ChatServices',['firebase'])
 	    }
 	}
 
+	this.getChats = function(eventId) {
+		if( !$rootScope.isOffline ) {
+			return this.loadChats(eventId);
+		}
+
+		return Firebase.getAll(eventId);
+
+	}
+
 	function onDatabaseChange(change) {  
-		console.log('----->  Database change: ', change);
+		console.log('----->  Chat database change: ', change);
 	    var index = findIndex(_myChats, change.id);
 
 	    if (change.deleted) {
@@ -98,37 +107,53 @@ angular.module('letsy.ChatServices',['firebase'])
 	    return low;
 	}
 
-	$rootScope.$on('newChatFromPush', function(event, args) {
-	    this.save(args.newChat);
-	    ErrorHandler.debug('ChatService', 'Chat.$on:newChatFromPush',args);
+	$rootScope.$on('newChatFromPush', function(event, newChat) {
+	    console.log('newChatFromPush:', newChat);
+	    saveChat(newChat);
+	    ErrorHandler.debug('ChatService', 'Chat.$on:newChatFromPush',newChat);
+	});
+	$rootScope.$on('removeChatFromPush', function(event, newChat) {
+	    console.log('removeChatFromPush:', removedChat);
+	    // deleteChat(removedChat);
+	    ErrorHandler.debug('ChatService', 'Chat.$on:removeChatFromPush',removedChat);
 	});
 
-	this.save = function(newChat) {
+	function saveChat(newChat) {
 
 		if( !angular.isDate(newChat.date) ) newChat.date = new Date(newChat.date);
 
-		newChat._id = newChat.eventId+'/'+newChat.date.getTime()+'/'+newChat.fromId;
+		newChat._id = newChat.eventId+'_'+newChat.date.getTime()+'_'+newChat.fromId;
 
+		Firebase.add(newChat.eventId, newChat);
+		onDatabaseChange({doc: newChat, deleted: false, id: newChat._id});
 		return $q.when(_db.get(newChat._id)
-			.then(function(doc) {
+			.then(function (doc) {
 				newChat._rev = doc._rev;
-				return _db.put( newChat );
+				_db.upsert(newChat._id, function(doc){return newChat;})
+				.then(function (res) {
+					console.log('update chat locally: ', res);
+				}).catch(function(error){
+					ErrorHandler.error('ChatServices', 'Chat.save()',error.message);
+				});
 			})
-			.then(function(result) {
-				console.log('updatedChat message: ', result);
-				onDatabaseChange({doc: newChat, deleted: false, id: newChat._id});
-			})
-			.catch(function(error) {
-				if( error.name === 'not_found' ) {
-					return _db.put(newChat).then(function(res){
-						console.log('newChat message: ', res);
-						onDatabaseChange({doc: newChat, deleted: false, id: newChat._id});
-					}).catch(function(error){ErrorHandler.error('ChatServices', 'Chat.save() -> db.put()',error.message);})
+			.catch(function(error){
+				if( error.name === 'not_found') {
+					_db.upsert(newChat._id, function(doc){return newChat;})
+					.then(function (res) {
+						console.log('create chat locally: ', res);
+					}).catch(function(error){
+						ErrorHandler.error('ChatServices', 'Chat.save() -> Put new chat', error.message);
+					});
 				}
 				else {
-					ErrorHandler.error('ChatServices', 'Chat.save()',error.message);
+					ErrorHandler.error('ChatServices', 'Chat.save() -> _db.get()',error.message);
 				}
-			}));
+			})
+		);
+	}
+
+	this.save = function(newChat) {
+		return saveChat(newChat);
 	}
 
 	this.send = function(eventID, message, tokens) {
@@ -148,7 +173,7 @@ angular.module('letsy.ChatServices',['firebase'])
 			'newChat': angular.toJson(newChat, 0)
 		};
 
-		console.log('Send Chat: ', newChat);
+		// console.log('Send Chat: ', newChat, payload);
 		console.log('Send Chat with payload: ', payload);
 
 		PushService.send([eventID], tokens, message, payload);
@@ -157,11 +182,13 @@ angular.module('letsy.ChatServices',['firebase'])
 	}
 
 	this.destroy = function() {
+		Firebase.stopUpdates();
 		_db.destroy().then(function() { console.log('Chats DB deleted') });
 	}
 
 	this.clearCache = function() {
 		_myChats = [];
+		Firebase.stopUpdates();
 	}
 
 }]);

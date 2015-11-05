@@ -102,7 +102,7 @@ angular.module('letsy.PushServices',[])
 						if(notification['newChat']) {
 					        console.log('Received new Chat: ', notification['newChat']);
 					        //Chat.save(notification['newChat']);
-					        $rootScope.$broadcast('newChatFromPush', { newChat: notification['newChat'] });
+					        //$rootScope.$broadcast('newChatFromPush', notification['newChat']);
 					    }
 
 						return true;

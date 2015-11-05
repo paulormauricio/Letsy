@@ -11,6 +11,7 @@ angular.module('letsy.LoginControllers', [])
       'ErrorHandler',
       'PushService',
       'Theme',
+      'Firebase',
       function(
         $scope, 
         $state,
@@ -20,10 +21,11 @@ angular.module('letsy.LoginControllers', [])
         Language,
         ErrorHandler,
         PushService,
-        Theme
+        Theme,
+        Firebase
       )
     {
-try {
+
     if( Parse.User.current() ) {
       //alert('Users logged in. Redirect to Events');
       $state.transitionTo("events");
@@ -167,6 +169,8 @@ try {
 
         PushService.init();
 
+        Firebase.registerUser(Parse.User.current().id, Parse.User.current().id);
+
         Language.set();
 
         Theme.init();
@@ -178,9 +182,4 @@ try {
 
     };
 
-}
-catch(error) {
-  ErrorHandler.error('LoginController', 'Login Error',error.message);
-//alert('Facebook Error: '+error.message);
-}
   }]);

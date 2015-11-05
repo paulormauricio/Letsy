@@ -23,7 +23,7 @@
     
 
 
-<div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth + 10) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel()">
+<div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth + 10) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel($event)">
 
     <div class="backgroundImage backgroundOpacity" ng-style="{'background-image': 'url('+background_image_url+')', 'height': 80 + item.firstRowHeight + item.colletionItemWidth + 2*imageResizeHeight+30+'px', 'top': '-'+(imageResizeHeight+30)+'px'}"></div>
 
@@ -149,7 +149,7 @@
             <button class="button button-icon icon ion-camera footer-btn"></button>
         </div>
         <label class="item-input-wrapper">
-            <textarea id="inputMessage" ng-model="newMessage" value="" placeholder="{{'chat_new' | translate}}" ng-focus="hideDetailPanel()" required minlength="1" maxlength="250" msd-elastic></textarea>
+            <textarea id="inputMessage" ng-model="newMessage" value="" placeholder="{{'chat_new' | translate}}" ng-focus="isPanelSlow=true; hideDetailPanel();" required minlength="1" maxlength="250" msd-elastic></textarea>
         </label>
         <div class="footer-btn-wrap">
             <button class="button button-clear footer-btn right" type="submit" ng-disabled="!newMessage || newMessage === ''" translate="chat_send">

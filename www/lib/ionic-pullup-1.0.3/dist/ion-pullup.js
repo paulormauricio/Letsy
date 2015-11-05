@@ -136,7 +136,7 @@ angular.module('ionic-pullup', [])
                   e.gesture.srcEvent.preventDefault();
                   e.gesture.preventDefault();
 
-console.log('e.gesture: ', e.gesture);
+// console.log('e.gesture: ', e.gesture);
 
                   switch (e.type) {
                       case 'dragstart':

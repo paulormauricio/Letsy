@@ -1,7 +1,25 @@
 angular.module('letsy.EventServices',['letsy.EventThemes'])
 
 
-.service('Event',['$rootScope', '$q', '$timeout', '$filter', 'ErrorHandler','PushService', function($rootScope, $q, $timeout, $filter, ErrorHandler, PushService){
+.service('Event',
+	[
+		'$rootScope', 
+		'$q', 
+		'$timeout', 
+		'$filter', 
+		'$firebaseArray',
+		'ErrorHandler',
+		'PushService', 
+		function(
+			$rootScope, 
+			$q, 
+			$timeout, 
+			$filter, 
+			$firebaseArray,
+			ErrorHandler, 
+			PushService
+		)
+	{
 
 console.log('<------ Start Events ----------->');
 
@@ -11,6 +29,8 @@ console.log('<------ Start Events ----------->');
 
 	var Event = Parse.Object.extend("Event");
 	var Participant = Parse.Object.extend("Participant");
+
+	//var eventsRef = new Firebase("https://<YOUR-FIREBASE-APP>.firebaseio.com/");
 
 	this.isForceGetEvents = false;
 	this.myEvent = null;
@@ -100,7 +120,7 @@ console.log('<------ Start Events ----------->');
 
 
 	function onDatabaseChange(change) {  
-console.log('----->  Database change: ', change);
+console.log('----->  Events database change: ', change);
 	    var index = findIndex(_myEvents, change.id);
 
 	    if (change.deleted) {

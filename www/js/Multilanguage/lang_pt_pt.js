@@ -118,6 +118,7 @@ angular.module('letsy.lang_pt_pt', [])
 	login_policy: 'Nunca iremos publicar no teu facebook nem vender os teus dados',
 	logout: 'Terminar sessão',
 	logout_confirm: '<small>Ao terminar a sessão, todos os teus dados pessoais serão apagados deste dispositivo e o histórico do chat será eliminado!</small>',
+	no: 'Não',
 	of: 'de',
 	openBrowser: 'Abrir no browser',
 	open_now: 'Aberto agora',
@@ -125,6 +126,10 @@ angular.module('letsy.lang_pt_pt', [])
 	refresh: 'Actualizar',
 	settings_title: 'Configurações',
 
+	upgrade: 'Nova actualização',
+	upgrade_desc: 'Existe uma nova versão da App. Queres atualizar?',
+
+	yes: 'Sim',
 
 //  Generated via excel
 baseball: 'baseball', 

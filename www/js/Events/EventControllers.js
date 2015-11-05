@@ -325,7 +325,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     function loadChat() {
-        Chat.loadChats($stateParams.objectId).then(function(chats) {
+        Chat.getChats($stateParams.objectId).then(function(chats) {
             // console.log('chats: ', chats);
             $scope.chats = chats;
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
@@ -495,43 +495,67 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         }, 1000);
     }
 
+    var panelElement = document.getElementById('showEvent');
+
     $scope.swipeDetailPanel = function(event) {
 
         var scroll = event.gesture.startEvent.center.pageY - event.gesture.center.pageY;
 
-        if(scroll < 0 ) {
-            // Aumenta imagem
-            //console.log('Aumenta imagem');
-            $scope.imageResizeHeight = -1*scroll/6;
+        switch (event.type) {
+        case 'dragstart':
+            break;
+        case 'drag':
+            
+            if(scroll < 0 ) {
+                // Aumenta imagem
+                console.log('Aumenta imagem');
+                $scope.imageResizeHeight = -1*scroll/6;
+            }
+            else {
+                // console.log('Reduce panel. Scroll = ', scroll);
+                $scope.detailPanelScrollUp = -1*scroll;
+            }
+            break;
+        case 'dragend':
+            break;
         }
-        else if( scroll >= $scope.item.firstRowHeight || event.gesture.velocityY > 0.3) {
-            $scope.hideDetailPanel();
-        }
-        else {
-            //console.log('Reduce panel. Scroll = ', scroll);
-            $scope.detailPanelScrollUp = -1*scroll;
-        }
+
     }
 
-    $scope.releaseDetailPanel = function() {
-console.log('Release');
+    $scope.releaseDetailPanel = function(event) {
+        //console.log('Release');
+
+        var scroll = event.gesture.startEvent.center.pageY - event.gesture.center.pageY;
+        // panelElement.css({'transition': '300ms ease-in-out'});
+
+        if( scroll >= $scope.item.firstRowHeight ) {
+            $scope.hideDetailPanel();
+        }
+        else if( event.gesture.velocityY > 0.3 && event.gesture.direction == 'up') {
+            $scope.hideDetailPanel();
+        }
+
         if( $scope.isShowDetailPanel ) {
             $timeout(function() {
+
                 $scope.detailPanelScrollUp = 0;
                 $scope.imageResizeHeight = 0;
             });
         }
     }
-
+ 
     $scope.hideDetailPanel = function() {
+        
         $timeout(function() {
             $scope.isShowDetailPanel = false;
-            $scope.isEdit = false;
             $scope.chatMarginTop = 10;
             $scope.detailPanelScrollUp = 0;
-            $scope.isPanelSlow = true;
             $scope.isShowParticipants = false;
         });
+
+        $timeout(function() {
+            $scope.isPanelSlow = true;
+        }, 100);
         
         $timeout(function() {
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
@@ -539,7 +563,8 @@ console.log('Release');
         console.log('hideDetailPanel');
     }
 
-    $scope.showDetailPanel = function() {
+    $scope.showDetailPanel = function(event) {
+console.log('event.gesture: ', event);
         if( !$scope.isShowDetailPanel ) {
             console.log('showDetailPanel');
             $timeout(function() {
@@ -1558,18 +1583,6 @@ console.log('Event.myEvent: ', Event.myEvent);
         
     }
 
-    Date.prototype.addDays = function(d) {    
-       this.setTime(this.getTime() + (d*24*60*60*1000)); 
-       return this;   
-    }
-    Date.prototype.addHours = function(h) {    
-       this.setTime(this.getTime() + (h*60*60*1000)); 
-       return this;   
-    }
-    Date.prototype.addMinutes = function(m) {    
-       this.setTime(this.getTime() + (m*60*1000)); 
-       return this;   
-    }
 
     $scope.datepickerObject = {};
 

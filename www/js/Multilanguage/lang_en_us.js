@@ -118,6 +118,7 @@ angular.module('letsy.lang_en_us', [])
 	login_policy: 'We will never post on facebook nor sell your data',
 	logout: 'Logout',
 	logout_confirm: '<small>This operation will remove your personal data from this device and your chat history will be lost!</small>',
+	no: 'No',
 	of: 'of',
 	openBrowser: 'Open in browser',
 	open_now: 'Open now',
@@ -125,6 +126,10 @@ angular.module('letsy.lang_en_us', [])
 	refresh: 'Refresh',
 	settings_title: 'Settings',
 
+	upgrade: 'New upgrade',
+	upgrade_desc: 'A new app version has been released. Would you like to upgrade?',
+
+	yes: 'Yes',
 
 //  Generated via excel
 baseball: 'Play baseball', 
