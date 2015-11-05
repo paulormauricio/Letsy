@@ -25,25 +25,8 @@ angular.module('letsy.FirebaseServices',['firebase'])
 
 
 	var ref = new Firebase('letsyapp.firebaseIO.com/event');
-	var eventsRef = [];
 
 	var messagesDateFrom = new Date();
-
-
-
-
-ref.child('evento1').on("child_changed", function(snapshot) {
-	console.log('*************************************************');
-	console.log('*************************************************');
-	console.log('changed chat:', snapshot.val());
-	alert('chegou');
-  // ErrorHandler.debug('ChatService', 'Chat.$on:newChatFromPush',snapshot.val());
-}, function(error) {
-	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-	console.log('child_changed error:', error);
-});
-
-
 
 
 	var auth = $firebaseAuth(ref);
