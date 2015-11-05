@@ -851,6 +851,7 @@ console.log('');
 console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
     $scope.isNew = $stateParams.isNew ? true : false;
+    $scope.showThemes = false;
 
     $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 

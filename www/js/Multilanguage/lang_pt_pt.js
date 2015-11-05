@@ -100,7 +100,7 @@ angular.module('letsy.lang_pt_pt', [])
 	event_push_user_join: ' vai ao evento ',
 	event_push_user_left: ' saiu do evento ',
 	event_push_canceled: 'foi cancelado',
-	event_theme_choose: 'Tema do evento',
+	event_theme_choose: 'Escolhe o tema do evento',
 	event_what: 'O que planeias fazer?',
 	event_when: 'Quando?',
 	event_where: 'Onde?',
