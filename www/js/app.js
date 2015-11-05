@@ -44,7 +44,7 @@ angular.module('letsy',
       Language, 
       PushService,
       Event,
-      // Settings,
+      Settings,
       ErrorHandler) {
 
   $ionicPlatform.ready(function() {
@@ -115,8 +115,8 @@ angular.module('letsy',
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
       $rootScope.isOffline = false;
-      // Settings.getParseConfig();
-      //PushService.init();
+      Settings.getParseConfig();
+      PushService.init();
   });
 
   // UI Router Authentication Check
