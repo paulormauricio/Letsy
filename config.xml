@@ -33,17 +33,12 @@
     <param name="APP_NAME" value="Letsy"/>
   </gap:plugin>
 
-  <!-- <gap:plugin name="cordova-plugin-pushnotification-parsepushnotification" source="npm" /> -->
 
   <feature name="Keyboard">
       <param name="ios-package" value="IonicKeyboard" onload="true" />
   </feature>
 
   <gap:plugin name="cordova-plugin-whitelist" source="npm" />
-
-  <!-- <gap:plugin name="onesignal-cordova-plugin-pgb-compat" source="npm" />
-  <gap:plugin name="cordova-plugin-googleplayservices" source="npm" />
-  <gap:plugin name="cordova-plugin-android-support-v4" source="npm" /> -->
   
   <allow-navigation href="*" />
 

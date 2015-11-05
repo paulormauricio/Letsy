@@ -1,4 +1,6 @@
-angular.module('letsy.ChatServices',['letsy.FirebaseServices'])
+angular.module('letsy.ChatServices',[
+	//'letsy.FirebaseServices'
+	])
 
 
 .service('Chat',
