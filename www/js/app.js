@@ -41,6 +41,7 @@ angular.module('letsy',
       $ionicPopup, 
       $timeout,
       $translate, 
+      Firebase,
       Language, 
       PushService,
       Event,
@@ -117,6 +118,7 @@ angular.module('letsy',
       $rootScope.isOffline = false;
       Settings.getParseConfig();
       PushService.init();
+      Firebase.init();
   });
 
   // UI Router Authentication Check

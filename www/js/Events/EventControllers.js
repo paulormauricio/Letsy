@@ -228,6 +228,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         $scope.chatMarginTop = 10;
         $scope.chatMarginBottom = 0;
         $scope.isPanelSlow = false;
+        $scope.slideChatDate = 0;
     });
 
     if( !Event.showEvent.id ) {
@@ -327,7 +328,12 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     function loadChat() {
         Chat.getChats($stateParams.objectId).then(function(chats) {
             // console.log('chats: ', chats);
-            $scope.chats = chats;
+            $scope.chats = chats.map(function(chat){
+                chat.date = $filter('prettyDayFormat')(chat.date);
+                chat.time = $filter('date')(chat.date, 'HH:mm');
+                return chat;
+            });
+            console.log('$scope.chats: ', $scope.chats);
             $ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom();
         })
         .catch(function(error) {
@@ -578,6 +584,41 @@ console.log('event.gesture: ', event);
                 $scope.isPanelSlow = false;
             }, 1000);
         }
+    }
+
+    $scope.moveChatDate = function(event) {
+
+        var scrollX = event.gesture.startEvent.center.pageX - event.gesture.center.pageX;
+
+        switch (event.type) {
+        case 'dragstart':
+            break;
+        case 'drag':
+            
+            if(scrollX > 50 ) {
+                $scope.slideChatDate = 55;
+            } 
+            else if(scrollX > 0 ) {
+                $scope.slideChatDate = scrollX*1.0;
+            }
+            else {
+                $scope.slideChatDate = 0;
+            }
+            break;
+        case 'dragend':
+            break;
+        }
+
+        
+    }
+    var chatsElement = document.getElementById("chats");
+    var chatsElementClass = chatsElement.className;
+    $scope.releaseChatDate = function(event) {
+        chatsElement.className = chatsElementClass + ' slow';
+        $scope.slideChatDate = 0;
+        $timeout(function() {
+            chatsElement.className = chatsElementClass;
+        }, 300);
     }
 
     //  Other functions

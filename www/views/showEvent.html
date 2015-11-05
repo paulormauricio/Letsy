@@ -6,25 +6,20 @@
         <i class="icon ion-ios-arrow-back"></i>
     </button>
 
-    <!-- <div class="borderTop themeBackgroundColor" ng-hide="isShowDetailPanel" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" style="position: absolute; bottom: -15px; left: 0px; width: 100%; text-align: center; padding: 0px; line-height: 0;">
+    <div class="headerExtraBar inner themeBackgroundColor" ng-style="{'width': item.width+'px'}">
         <i class="ion-android-arrow-dropdown"></i>
-    </div> -->
+    </div>
 
-
-    <h1 class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">{{::showEvent.name}}</h1>
+    <h1 id="showTitle" class="title invisible" ng-class="{'visible': !isShowDetailPanel, 'small': showEvent.name.length>25}">
+        {{::showEvent.name}}
+    </h1>
 
     <button class="button button-clear right invisible" ng-class="{'visible':isHost && !isOffline && isShowDetailPanel}" ng-click="edit()">
         <i class="ion-edit"></i>
     </button>
 
 </ion-header-bar>
-
-
-<div class="headerExtraBar themeBackgroundColor" ng-style="{'width': item.width+'px'}" ng-click="showDetailPanel()" on-swipe-down="showDetailPanel()" on-drag-down="showDetailPanel()" ng-class="{'hidden': isShowDetailPanel}">
-    <i class="ion-android-arrow-dropdown"></i>
-</div>
-    
-    
+   
 
 
 <div id="showEvent" class="cover" ng-class="{'show': isShowDetailPanel, 'slow': isPanelSlow}" ng-style="{'margin-top': detailPanelScrollUp+'px', 'top': '-'+(item.firstRowHeight + item.colletionItemWidth + 10) + 'px'}" has-bouncing="true" on-swipe="swipeDetailPanel($event)" on-drag="swipeDetailPanel($event)" on-release="releaseDetailPanel($event)">
@@ -42,7 +37,8 @@
         </button>
 
 
-        <div class="bottom textCover">
+        <div class="bottom textCover" invisible ng-class="{'visible': showEvent.name}">
+
             <h1 ng-show="showEvent.name"
                 ng-click="editName()"
                 class="" ng-class="{'lower': !showEvent.place_name}">
@@ -128,12 +124,12 @@
 </div>
 
 
-<ion-content id="chats" scroll-event-interval="5" resize-on-scroll scrollbar-y="false" class="has-footer" delegate-handle="chatScroll" on-swipe-left="isShowDate=true" on-drag-left="isShowDate=true" on-release="isShowDate=false" ng-class="{'showDate': isShowDate}" ng-style="{'margin-top': chatMarginTop+'px', 'margin-bottom': chatMarginBottom+'px'}">
+<ion-content id="chats" scroll-event-interval="5" resize-on-scroll scrollbar-y="false" class="has-footer" delegate-handle="chatScroll" on-swipe="moveChatDate($event)" on-drag="moveChatDate($event)" on-release="releaseChatDate($event)" ng-style="{'margin-top': (46 + chatMarginTop)+'px', 'margin-bottom': chatMarginBottom+'px', 'padding-right': slideChatDate+'px'}">
 
 
     <div class="chat" ng-repeat="chat in chats track by chat._id" ng-class="{'right': chat.fromFacebookId === myFacebookId, 'left': chat.fromFacebookId !== myFacebookId, 'repeated':chat.fromFacebookId == chats[$index-1].fromFacebookId, 'willRepeat':chat.fromFacebookId == chats[$index+1].fromFacebookId, 'hideDaySection':chat.date.getDate() == chats[$index-1].date.getDate()}" on-hold="onMessageHold($event, $index, message)">
 
-    <div class="item-divider">{{chat.date | prettyDayFormat }}</div>
+    <div class="item-divider">{{ ::chat.date }}</div>
 
         <img ng-src="https://graph.facebook.com/v2.2/{{chat.fromFacebookId}}/picture??type=small" class="profile-pic"> 
 
@@ -142,7 +138,7 @@
                 {{chat.message}}
             </div>
         </div>
-        <span class="date slow" am-time-ago="">{{chat.date | date : 'HH:mm'}}</span>
+        <span class="date" am-time-ago="">{{ ::chat.time }}</span>
     </div>
     
 </ion-content> 

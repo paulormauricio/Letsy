@@ -330,6 +330,19 @@ h1.title .top {
 	display: none;
 }
 
+.headerExtraBar.inner {
+    position: absolute;
+    bottom: -10px;
+    top: auto;
+}
+
+#showTitle {
+    left: 50% !important;
+    right: auto !important;
+    width: 100px;
+    margin-left: -50px;
+}
+
 /**** List Styles  ***/
 
 .item .middle {
@@ -1075,6 +1088,7 @@ i.edit {
 #showEvent, #chats {
 	border: 0px;
 	padding: 0px;
+	top: 0px;
 }
 #showEvent, #showEvent .item, #chatsContainer .item {
 	border: 0px;

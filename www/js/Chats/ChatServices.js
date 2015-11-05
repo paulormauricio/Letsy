@@ -84,7 +84,7 @@ angular.module('letsy.ChatServices',[
 		})
 		.catch(function(error){
 			ErrorHandler.error('ChatServices', 'Chat.getChats()',error.message);
-			return [];
+			return this.loadChats(eventId);
 		});
 
 	}
