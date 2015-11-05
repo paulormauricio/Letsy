@@ -1,5 +1,5 @@
 angular.module('letsy.ChatServices',[
-	//'letsy.FirebaseServices'
+	'letsy.FirebaseServices'
 	])
 
 
@@ -9,7 +9,7 @@ angular.module('letsy.ChatServices',[
 		'$q', 
 		'$timeout', 
 		'$filter', 
-		// 'Firebase',
+		'Firebase',
 		'ErrorHandler', 
 		'PushService',
 		function(
@@ -17,13 +17,12 @@ angular.module('letsy.ChatServices',[
 			$q, 
 			$timeout, 
 			$filter, 
-			// Firebase,
+			Firebase,
 			ErrorHandler,
 			PushService
 		)
 	{
 
-	var Firebase = {};
 	var _db = new PouchDB('chats', {adapter: 'websql'});
 	var _myChats = [];
 
