@@ -25,7 +25,7 @@ angular.module('letsy.SettingsServices',[])
 
 
 	function getParseConfig() {
-
+return;
 		if(!window.cordova) return;
 
 		Parse.Config.get().then(function(config) {
