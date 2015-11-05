@@ -169,7 +169,7 @@ angular.module('letsy.LoginControllers', [])
 
         PushService.init();
 
-        Firebase.registerUser(Parse.User.current().id, Parse.User.current().id);
+        // Firebase.registerUser(Parse.User.current().id, Parse.User.current().id);
 
         Language.set();
 

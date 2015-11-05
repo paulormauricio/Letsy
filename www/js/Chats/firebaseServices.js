@@ -1,7 +1,9 @@
-angular.module('letsy.FirebaseServices',[])
+angular.module('letsy.FirebaseServices',[
+	// 'firebase'
+	]);
 
-
-.factory('Firebase',
+/*
+factory('Firebase',
 	[
 		'$rootScope', 
 		'$q', 
@@ -126,4 +128,4 @@ console.log('<----- Register in Firebase ---->');
 	};
 
 	return Message;
-}]);
+}]);*/

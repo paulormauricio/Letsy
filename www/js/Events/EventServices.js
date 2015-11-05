@@ -7,7 +7,6 @@ angular.module('letsy.EventServices',['letsy.EventThemes'])
 		'$q', 
 		'$timeout', 
 		'$filter', 
-		'$firebaseArray',
 		'ErrorHandler',
 		'PushService', 
 		function(
@@ -15,7 +14,6 @@ angular.module('letsy.EventServices',['letsy.EventThemes'])
 			$q, 
 			$timeout, 
 			$filter, 
-			$firebaseArray,
 			ErrorHandler, 
 			PushService
 		)
