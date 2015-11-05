@@ -71,11 +71,21 @@ angular.module('letsy.ChatServices',[
 	}
 
 	this.getChats = function(eventId) {
-		if( !$rootScope.isOffline ) {
+		if( $rootScope.isOffline ) {
 			return this.loadChats(eventId);
 		}
 
-		return Firebase.getAll(eventId);
+		return Firebase.getAll(eventId).then(function(chats) {
+			console.log('chats after get:', chats);
+			angular.forEach(chats, function(chat, key) {
+			  saveChatLocally(chat);
+			});
+			return chats;
+		})
+		.catch(function(error){
+			ErrorHandler.error('ChatServices', 'Chat.getChats()',error.message);
+			return [];
+		});
 
 	}
 
@@ -117,14 +127,7 @@ angular.module('letsy.ChatServices',[
 	    ErrorHandler.debug('ChatService', 'Chat.$on:removeChatFromPush',removedChat);
 	});
 
-	function saveChat(newChat) {
-
-		if( !angular.isDate(newChat.date) ) newChat.date = new Date(newChat.date);
-
-		newChat._id = newChat.eventId+'_'+newChat.date.getTime()+'_'+newChat.fromId;
-
-		Firebase.add(newChat.eventId, newChat);
-		onDatabaseChange({doc: newChat, deleted: false, id: newChat._id});
+	function saveChatLocally(newChat) {
 		return $q.when(_db.get(newChat._id)
 			.then(function (doc) {
 				newChat._rev = doc._rev;
@@ -149,6 +152,18 @@ angular.module('letsy.ChatServices',[
 				}
 			})
 		);
+	}
+
+	function saveChat(newChat) {
+
+		if( !angular.isDate(newChat.date) ) newChat.date = new Date(newChat.date);
+
+		newChat._id = newChat.eventId+'_'+newChat.date.getTime()+'_'+newChat.fromId;
+
+		Firebase.add(newChat.eventId, newChat);
+		onDatabaseChange({doc: newChat, deleted: false, id: newChat._id});
+		
+		return saveChatLocally(newChat);
 	}
 
 	this.save = function(newChat) {
