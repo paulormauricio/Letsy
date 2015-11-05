@@ -329,18 +329,6 @@ h1.title .top {
 .transparent .headerExtraBar {
 	display: none;
 }
-.headerExtraBar.inner {
-	position: absolute;
-	bottom: -10px;
-	top: auto;
-}
-
-#showTitle {
-	left: 50% !important;
-	right: auto !important;
-	width: 100px;
-	margin-left: -50px;
-}
 
 /**** List Styles  ***/
 
